@@ -1,7 +1,7 @@
 .address-page {
   min-height: 100vh;
   background: #FFF5EC;
-  padding-bottom: 140rpx;
+  padding-bottom: 172rpx;
 }
 
 /* ===== Address List ===== */
@@ -194,9 +194,61 @@
   font-weight: 600;
   color: #5C3D2E;
   display: block;
+  margin-bottom: 0;
+}
+
+.form-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
   margin-bottom: 32rpx;
   padding-bottom: 20rpx;
   border-bottom: 2rpx solid rgba(255, 123, 137, 0.12);
+}
+
+.paste-link {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #FF7B89;
+  padding: 8rpx 18rpx;
+  border-radius: 20rpx;
+  background: rgba(255, 123, 137, 0.08);
+}
+
+.paste-box {
+  margin-bottom: 26rpx;
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #FFF5EC;
+  border: 2rpx solid rgba(255, 180, 160, 0.18);
+}
+
+.paste-textarea {
+  width: 100%;
+  height: 150rpx;
+  padding: 18rpx 20rpx;
+  box-sizing: border-box;
+  border-radius: 16rpx;
+  background: #FFFBF7;
+  color: #5C3D2E;
+  font-size: 26rpx;
+  line-height: 1.45;
+}
+
+.extract-btn {
+  width: 100%;
+  height: 72rpx;
+  line-height: 1;
+  margin: 16rpx 0 0;
+  padding: 0;
+  border-radius: 20rpx;
+  background: rgba(126, 200, 160, 0.12);
+  color: #5DA87A;
+  border: 2rpx solid rgba(126, 200, 160, 0.28);
+  font-size: 27rpx;
+  font-weight: 800;
 }
 
 .field-group {
@@ -297,40 +349,72 @@ button::after {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20rpx 32rpx;
-  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  background: rgba(255, 245, 236, 0.95);
-  backdrop-filter: blur(10rpx);
+  padding: 18rpx 28rpx;
+  padding-bottom: calc(18rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 251, 247, 0.96);
+  border-top: 2rpx solid rgba(255, 200, 180, 0.2);
+  box-shadow: 0 -8rpx 24rpx rgba(160, 128, 112, 0.08);
+  backdrop-filter: blur(12rpx);
+}
+
+.bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
 }
 
 .add-btn {
-  width: 100%;
-  height: 88rpx;
-  line-height: 88rpx;
+  flex: 1;
+  min-width: 0;
+  height: 84rpx;
+  line-height: 1;
   background: linear-gradient(135deg, #FF9AA4, #FF7B89);
   color: #fff;
-  border-radius: 44rpx;
-  font-size: 30rpx;
-  font-weight: 600;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+  font-weight: 700;
   text-align: center;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8rpx;
+  gap: 6rpx;
+  padding: 0;
+  margin: 0;
   box-shadow: 0 4rpx 16rpx rgba(255, 123, 137, 0.28);
 }
 
+.paste-btn {
+  flex: 1;
+  min-width: 0;
+  height: 84rpx;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  border-radius: 24rpx;
+  background: #FFFBF7;
+  color: #5DA87A;
+  border: 2rpx solid rgba(126, 200, 160, 0.45);
+  font-size: 28rpx;
+  font-weight: 700;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 14rpx rgba(126, 200, 160, 0.1);
+}
+
 .add-icon {
-  font-size: 34rpx;
-  font-weight: 300;
+  font-size: 30rpx;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .manage-entry {
   text-align: center;
-  margin-top: 16rpx;
+  margin-top: 14rpx;
   font-size: 26rpx;
   color: #FF7B89;
   font-weight: 600;
-  padding: 12rpx;
+  padding: 10rpx;
 }

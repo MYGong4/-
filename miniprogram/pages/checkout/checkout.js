@@ -102,6 +102,28 @@ Page({
     });
   },
 
+  pasteAddress() {
+    wx.getClipboardData({
+      success: (res) => {
+        const parsed = address.parseAddressText(res.data);
+        if (!parsed || (!parsed.name && !parsed.phone && !parsed.address)) {
+          wx.showToast({ title: '剪贴板没有地址', icon: 'none' });
+          return;
+        }
+        this.setData({
+          'form.contactName': parsed.name || this.data.form.contactName,
+          'form.phone': parsed.phone || this.data.form.phone,
+          'form.address': parsed.address || this.data.form.address,
+          lastAddress: null
+        });
+        wx.showToast({ title: '已自动填充', icon: 'success' });
+      },
+      fail: () => {
+        wx.showToast({ title: '读取剪贴板失败', icon: 'none' });
+      }
+    });
+  },
+
   submitOrder() {
     const form = {
       contactName: this.data.form.contactName.trim(),

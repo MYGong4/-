@@ -46,7 +46,21 @@
   <!-- Edit Form -->
   <view class="edit-form" wx:if="{{editing}}">
     <view class="form-card">
-      <text class="form-title">{{editData._id ? '编辑地址' : '新增地址'}}</text>
+      <view class="form-title-row">
+        <text class="form-title">{{editData._id ? '编辑地址' : '新增地址'}}</text>
+        <text class="paste-link" bindtap="pasteAddress">粘贴识别</text>
+      </view>
+
+      <view class="paste-box">
+        <textarea
+          class="paste-textarea"
+          placeholder="把收货信息粘贴到这里，例如：收件人、手机号、详细地址"
+          value="{{pasteText}}"
+          maxlength="300"
+          bindinput="updatePasteText"
+        />
+        <button class="extract-btn" bindtap="extractPasteText">提取地址信息</button>
+      </view>
 
       <view class="field-group">
         <text class="field-label">联系人</text>
@@ -107,10 +121,13 @@
 
   <!-- Bottom Bar -->
   <view class="bottom-bar" wx:if="{{!editing}}">
-    <button class="add-btn" bindtap="onNew">
-      <text class="add-icon">＋</text>
-      <text>新增地址</text>
-    </button>
+    <view class="bottom-actions">
+      <button class="paste-btn" bindtap="pasteAddress">粘贴识别</button>
+      <button class="add-btn" bindtap="onNew">
+        <text class="add-icon">＋</text>
+        <text>新增地址</text>
+      </button>
+    </view>
     <view class="manage-entry" wx:if="{{mode === 'select'}}" bindtap="onManage">
       <text>管理地址</text>
     </view>

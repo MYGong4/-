@@ -7,9 +7,12 @@ Page({
     orders: [],
     loading: false,
     ordersLoading: false,
+    hasCancelRequests: false,
     uploadingId: '',
     authorized: false,
     showProductForm: false,
+    editingProductId: '',
+    formUploading: false,
     categoryForm: {
       name: ''
     },
@@ -20,6 +23,7 @@ Page({
       price: '',
       sales: '0',
       tag: '',
+      image: '',
       available: true
     }
   },
@@ -100,10 +104,14 @@ Page({
             completedTime,
             itemCount,
             shortId,
-            completing: false
+            completing: false,
+            approving: false,
+            rejecting: false,
+            deleting: false
           });
         });
-        this.setData({ orders });
+        const hasCancelRequests = orders.some(function (o) { return o.cancelStatus === 'pending'; });
+        this.setData({ orders, hasCancelRequests });
       })
       .catch(() => {
         wx.showToast({
@@ -140,13 +148,65 @@ Page({
       });
   },
 
-  deleteCompletedOrder(event) {
+  approveCancel(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.showModal({
+      title: '同意取消',
+      content: '确定同意这笔订单的取消申请吗？',
+      confirmText: '同意',
+      confirmColor: '#7EC8A0',
+      success: (res) => {
+        if (!res.confirm) return;
+        const orders = this.data.orders.map((order) => (
+          order._id === id ? Object.assign({}, order, { approving: true }) : order
+        ));
+        this.setData({ orders });
+        api.approveCancelOrder(id)
+          .then(() => {
+            wx.showToast({ title: '已同意取消', icon: 'success' });
+            this.loadOrders();
+          })
+          .catch(() => {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+            this.loadOrders();
+          });
+      }
+    });
+  },
+
+  rejectCancel(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.showModal({
+      title: '拒绝取消',
+      content: '确定拒绝这笔订单的取消申请吗？',
+      confirmText: '拒绝',
+      confirmColor: '#FF7B89',
+      success: (res) => {
+        if (!res.confirm) return;
+        const orders = this.data.orders.map((order) => (
+          order._id === id ? Object.assign({}, order, { rejecting: true }) : order
+        ));
+        this.setData({ orders });
+        api.rejectCancelOrder(id)
+          .then(() => {
+            wx.showToast({ title: '已拒绝取消', icon: 'success' });
+            this.loadOrders();
+          })
+          .catch(() => {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+            this.loadOrders();
+          });
+      }
+    });
+  },
+
+  deleteAdminOrder(event) {
     const id = event.currentTarget.dataset.id;
     if (!id) return;
 
     wx.showModal({
       title: '删除订单',
-      content: '确定删除这笔已完成订单吗？删除后不可恢复。',
+      content: '确定删除这笔订单吗？删除后不可恢复。',
       confirmText: '删除',
       confirmColor: '#FF7B89',
       success: (res) => {
@@ -156,7 +216,7 @@ Page({
             order._id === id ? Object.assign({}, order, { deleting: true }) : order
           ))
         });
-        api.deleteCompletedOrder(id)
+        api.deleteAdminOrder(id)
           .then(() => {
             wx.showToast({
               title: '已删除',
@@ -164,9 +224,10 @@ Page({
             });
             this.loadOrders();
           })
-          .catch(() => {
+          .catch((error) => {
+            const message = error && error.message ? error.message : '删除失败';
             wx.showToast({
-              title: '删除失败',
+              title: message.length > 10 ? message.slice(0, 10) : message,
               icon: 'none'
             });
             this.loadOrders();
@@ -176,11 +237,35 @@ Page({
   },
 
   seedMenuData() {
+    const categories = this.data.categories || [];
+    const products = this.data.products || [];
+    if (!categories.length || !products.length) {
+      this.seedMenuWithData({});
+      return;
+    }
+
+    wx.showModal({
+      title: '设置初始化云菜单',
+      content: '将用当前页面的分类和菜品覆盖云端菜单，作为新的初始化云菜单。',
+      confirmText: '设为初始',
+      confirmColor: '#FF7B89',
+      success: (res) => {
+        if (!res.confirm) return;
+        this.seedMenuWithData({
+          categories,
+          products,
+          overwrite: true
+        });
+      }
+    });
+  },
+
+  seedMenuWithData(options) {
     wx.showLoading({ title: '初始化中' });
-    api.seedMenuData()
+    api.seedMenuData(options)
       .then((res) => {
         wx.showToast({
-          title: res.skipped ? '已有云菜单' : '初始化完成',
+          title: res.skipped ? '已有云菜单' : '已设为初始',
           icon: 'success'
         });
         this.loadProducts();
@@ -286,13 +371,43 @@ Page({
         price: '',
         sales: '0',
         tag: '',
+        image: '',
         available: true
+      },
+      editingProductId: '',
+      formUploading: false
+    });
+  },
+
+  editProduct(event) {
+    const productId = event.currentTarget.dataset.id;
+    const product = this.data.products.find((item) => item._id === productId);
+    if (!product) return;
+    const categoryIndex = Math.max(0, this.data.categories.findIndex((item) => item._id === product.categoryId));
+    this.setData({
+      showProductForm: true,
+      editingProductId: productId,
+      categoryIndex,
+      formUploading: false,
+      productForm: {
+        name: product.name || '',
+        description: product.description || '',
+        price: String(product.price || ''),
+        sales: String(product.sales || 0),
+        tag: product.tag || '',
+        image: product.image || '',
+        available: product.available !== false,
+        sort: product.sort || Date.now()
       }
     });
   },
 
   closeProductForm() {
-    this.setData({ showProductForm: false });
+    this.setData({
+      showProductForm: false,
+      editingProductId: '',
+      formUploading: false
+    });
   },
 
   updateProductField(event) {
@@ -325,7 +440,9 @@ Page({
       price: Number(form.price),
       sales: Number(form.sales) || 0,
       tag: form.tag.trim(),
-      available: form.available
+      image: form.image || '',
+      available: form.available,
+      sort: Number(form.sort) || Date.now()
     };
 
     if (!product.categoryId) {
@@ -351,23 +468,95 @@ Page({
     }
 
     wx.showLoading({ title: '保存中' });
-    api.createProduct(product)
+    const request = this.data.editingProductId
+      ? api.updateProduct(this.data.editingProductId, product)
+      : api.createProduct(product);
+    request
       .then(() => {
         wx.showToast({
-          title: '已新增',
+          title: this.data.editingProductId ? '已更新' : '已新增',
           icon: 'success'
         });
-        this.setData({ showProductForm: false });
+        this.setData({
+          showProductForm: false,
+          editingProductId: '',
+          formUploading: false
+        });
         this.loadProducts();
       })
       .catch(() => {
         wx.showToast({
-          title: '新增失败',
+          title: this.data.editingProductId ? '更新失败' : '新增失败',
           icon: 'none'
         });
       })
       .finally(() => {
         wx.hideLoading();
+      });
+  },
+
+  pickProductFormImage() {
+    const productId = this.data.editingProductId;
+    if (!productId) {
+      wx.showToast({
+        title: '保存后再传图',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempPath = res.tempFilePaths[0];
+        this.setData({ formUploading: true });
+        wx.showLoading({ title: '上传中' });
+        api.uploadProductImage(productId, tempPath)
+          .then((fileID) => {
+            this.setData({
+              'productForm.image': fileID || ''
+            });
+            wx.showToast({
+              title: '图片已更新',
+              icon: 'success'
+            });
+            this.loadProducts();
+          })
+          .catch(() => {
+            wx.showToast({
+              title: '上传失败',
+              icon: 'none'
+            });
+          })
+          .finally(() => {
+            wx.hideLoading();
+            this.setData({ formUploading: false });
+          });
+      }
+    });
+  },
+
+  clearProductFormImage() {
+    const productId = this.data.editingProductId;
+    if (!productId) return;
+    api.updateProductImage(productId, '')
+      .then(() => {
+        this.setData({
+          'productForm.image': ''
+        });
+        this.loadProducts();
+        wx.showToast({
+          title: '已清除',
+          icon: 'success'
+        });
+      })
+      .catch(() => {
+        wx.showToast({
+          title: '清除失败',
+          icon: 'none'
+        });
       });
   },
 

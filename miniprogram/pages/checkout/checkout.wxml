@@ -37,7 +37,10 @@
   <view class="form-card">
     <view class="form-title-row">
       <text class="form-title">取餐/配送信息</text>
-      <text class="form-title-link" bindtap="goManageAddress">管理地址</text>
+      <view class="form-title-actions">
+        <text class="form-title-link paste" bindtap="pasteAddress">粘贴识别</text>
+        <text class="form-title-link" bindtap="goManageAddress">管理地址</text>
+      </view>
     </view>
     <input
       class="field"

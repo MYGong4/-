@@ -49,7 +49,7 @@
   left: 0;
   top: 214rpx;
   z-index: 24;
-  width: 28rpx;
+  width: 14rpx;
   height: 132rpx;
   transition: opacity 220ms ease, transform 220ms ease;
 }
@@ -74,43 +74,12 @@
   transform: translateX(-16rpx);
 }
 
-.catalog-toggle {
-  width: 82rpx;
-  height: 116rpx;
-  padding: 0;
-  margin: 0;
-  opacity: 0;
-  transform: translateX(-72rpx);
-  transition: opacity 180ms ease, transform 220ms ease;
-  border-radius: 0 24rpx 24rpx 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 251, 247, 0.92);
-  border: 2rpx solid rgba(255, 123, 137, 0.2);
-  border-left: 0;
-  box-shadow: 0 14rpx 34rpx rgba(255, 123, 137, 0.12);
-}
-
-.catalog-rail:hover {
-  width: 96rpx;
-}
-.catalog-rail:hover .catalog-toggle,
-.catalog-rail-hover .catalog-toggle {
-  opacity: 1;
-  transform: translateX(0);
-}
 .catalog-rail:hover::before,
 .catalog-rail-hover::before {
   width: 14rpx;
   box-shadow:
     0 0 18rpx rgba(255, 123, 137, 0.8),
     0 0 40rpx rgba(255, 123, 137, 0.35);
-}
-
-.catalog-toggle-icon {
-  width: 46rpx;
-  height: 46rpx;
 }
 
 /* ===== 抽屉目录 ===== */

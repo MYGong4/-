@@ -5,7 +5,9 @@ cloud.init({
 });
 
 const db = cloud.database();
+const _ = db.command;
 const ORDERS = 'orders';
+const PRODUCTS = 'products';
 const ORDER_COMPLETED_TEMPLATE_ID = process.env.ORDER_COMPLETED_TEMPLATE_ID
   || 'A9FC2Y02LO63x3rA7lDsfHRc4-8MaEQTbGPnCwyu4YA';
 const ADMIN_OPENIDS = (process.env.ADMIN_OPENIDS || '')
@@ -76,6 +78,41 @@ function getOrderTitle(order = {}) {
   return title || '餐品';
 }
 
+function getOrderedProductIds(items = []) {
+  const ids = [];
+  items.forEach((item) => {
+    const productId = String(item && item.productId ? item.productId : '').trim();
+    if (productId && !ids.includes(productId)) {
+      ids.push(productId);
+    }
+  });
+  return ids;
+}
+
+async function increaseProductSales(items = []) {
+  const productIds = getOrderedProductIds(items);
+  if (!productIds.length) {
+    return { ok: true, count: 0 };
+  }
+
+  const results = await Promise.all(productIds.map((productId) => (
+    db.collection(PRODUCTS).doc(productId).update({
+      data: {
+        sales: _.inc(1),
+        updatedAt: db.serverDate()
+      }
+    }).catch((error) => {
+      console.error('[orders] increase product sales failed', productId, error);
+      return { ok: false, productId };
+    })
+  )));
+
+  return {
+    ok: results.every((result) => result && result.ok !== false),
+    count: results.filter((result) => result && result.ok !== false).length
+  };
+}
+
 async function sendCompletedNotice(order, completedAt) {
   if (!ORDER_COMPLETED_TEMPLATE_ID || !order || !order._openid) {
     return { ok: false, skipped: true };
@@ -130,9 +167,11 @@ exports.main = async (event = {}) => {
         serverCreatedAt: db.serverDate()
       })
     });
+    const salesUpdate = await increaseProductSales(event.order.items);
     return {
       ok: true,
-      id: res._id
+      id: res._id,
+      salesUpdate
     };
   }
 
@@ -219,10 +258,6 @@ exports.main = async (event = {}) => {
     const orderRes = await db.collection(ORDERS).doc(id).get();
     const order = orderRes.data;
     if (!order) throw new Error('order not found');
-    if (order.status !== 'completed') {
-      throw new Error('only completed orders can be deleted');
-    }
-
     const res = await db.collection(ORDERS).doc(id).remove();
     return {
       ok: true,
@@ -240,6 +275,45 @@ exports.main = async (event = {}) => {
       ok: true,
       count: results.reduce((total, res) => total + (res.stats ? res.stats.removed : 0), 0)
     };
+  }
+
+  if (action === 'requestCancel') {
+    const id = String(event.id || '').trim();
+    if (!id) throw new Error('order id required');
+
+    const orderRes = await db.collection(ORDERS).doc(id).get();
+    const order = orderRes.data;
+    if (!order) throw new Error('order not found');
+    if (order._openid !== openid) throw new Error('permission denied');
+    if (order.status !== 'created') throw new Error('only created orders can be cancelled');
+    if (order.cancelStatus) throw new Error('cancel already requested');
+
+    await db.collection(ORDERS).doc(id).update({
+      data: { cancelStatus: 'pending' }
+    });
+    return { ok: true };
+  }
+
+  if (action === 'approveCancel') {
+    assertAdmin(openid);
+    const id = String(event.id || '').trim();
+    if (!id) throw new Error('order id required');
+
+    await db.collection(ORDERS).doc(id).update({
+      data: { cancelStatus: 'approved', status: 'cancelled' }
+    });
+    return { ok: true };
+  }
+
+  if (action === 'rejectCancel') {
+    assertAdmin(openid);
+    const id = String(event.id || '').trim();
+    if (!id) throw new Error('order id required');
+
+    await db.collection(ORDERS).doc(id).update({
+      data: { cancelStatus: 'rejected' }
+    });
+    return { ok: true };
   }
 
   throw new Error(`unknown action: ${action}`);

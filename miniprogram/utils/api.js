@@ -117,7 +117,7 @@ function createProduct(product) {
     if (!productCache) productCache = mock.products.slice();
     const created = Object.assign({}, product, {
       _id: `local-product-${Date.now()}`,
-      image: '',
+      image: product.image || '',
       available: product.available !== false
     });
     productCache = productCache.concat(created);
@@ -129,6 +129,28 @@ function createProduct(product) {
 
   return callCloudFunction('menuAdmin', {
     action: 'createProduct',
+    product
+  });
+}
+
+function updateProduct(productId, product) {
+  if (!productId) {
+    return Promise.reject(new Error('product id required'));
+  }
+
+  if (!isCloudReady()) {
+    if (!productCache) productCache = mock.products.slice();
+    productCache = productCache.map((item) => (
+      item._id === productId
+        ? Object.assign({}, item, product, { _id: productId, available: product.available !== false })
+        : item
+    ));
+    return Promise.resolve({ ok: true });
+  }
+
+  return callCloudFunction('menuAdmin', {
+    action: 'updateProduct',
+    productId,
     product
   });
 }
@@ -159,9 +181,24 @@ function createOrder(order) {
       createdAt
     });
     wx.setStorageSync('local_orders', [created].concat(localOrders));
+    if (!productCache) productCache = mock.products.slice();
+    const orderedProductIds = (order.items || []).reduce((ids, item) => {
+      const productId = item && item.productId;
+      if (productId && !ids.includes(productId)) ids.push(productId);
+      return ids;
+    }, []);
+    productCache = productCache.map((product) => (
+      orderedProductIds.includes(product._id)
+        ? Object.assign({}, product, { sales: (Number(product.sales) || 0) + 1 })
+        : product
+    ));
     return Promise.resolve({
       ok: true,
-      id: created._id
+      id: created._id,
+      salesUpdate: {
+        ok: true,
+        count: orderedProductIds.length
+      }
     });
   }
 
@@ -286,6 +323,27 @@ function deleteCompletedOrder(id) {
   });
 }
 
+function deleteAdminOrder(id) {
+  if (!id) {
+    return Promise.reject(new Error('order id required'));
+  }
+
+  if (!isCloudReady()) {
+    const localOrders = wx.getStorageSync('local_orders') || [];
+    const next = localOrders.filter((order) => order._id !== id);
+    wx.setStorageSync('local_orders', next);
+    return Promise.resolve({
+      ok: true,
+      count: localOrders.length - next.length
+    });
+  }
+
+  return callCloudFunction('orders', {
+    action: 'adminDeleteCompleted',
+    id
+  });
+}
+
 function deleteOrders(ids = []) {
   const targets = ids.filter(Boolean);
   if (!targets.length) {
@@ -310,6 +368,57 @@ function deleteOrders(ids = []) {
 
 function deleteOrder(id) {
   return deleteOrders([id]);
+}
+
+function requestCancelOrder(id) {
+  if (!id) return Promise.reject(new Error('order id required'));
+
+  if (!isCloudReady()) {
+    const localOrders = wx.getStorageSync('local_orders') || [];
+    const next = localOrders.map((order) => (
+      order._id === id
+        ? Object.assign({}, order, { cancelStatus: 'pending' })
+        : order
+    ));
+    wx.setStorageSync('local_orders', next);
+    return Promise.resolve({ ok: true });
+  }
+
+  return callCloudFunction('orders', { action: 'requestCancel', id });
+}
+
+function approveCancelOrder(id) {
+  if (!id) return Promise.reject(new Error('order id required'));
+
+  if (!isCloudReady()) {
+    const localOrders = wx.getStorageSync('local_orders') || [];
+    const next = localOrders.map((order) => (
+      order._id === id
+        ? Object.assign({}, order, { cancelStatus: 'approved', status: 'cancelled' })
+        : order
+    ));
+    wx.setStorageSync('local_orders', next);
+    return Promise.resolve({ ok: true });
+  }
+
+  return callCloudFunction('orders', { action: 'approveCancel', id });
+}
+
+function rejectCancelOrder(id) {
+  if (!id) return Promise.reject(new Error('order id required'));
+
+  if (!isCloudReady()) {
+    const localOrders = wx.getStorageSync('local_orders') || [];
+    const next = localOrders.map((order) => (
+      order._id === id
+        ? Object.assign({}, order, { cancelStatus: 'rejected' })
+        : order
+    ));
+    wx.setStorageSync('local_orders', next);
+    return Promise.resolve({ ok: true });
+  }
+
+  return callCloudFunction('orders', { action: 'rejectCancel', id });
 }
 
 function uploadProductImage(productId, tempFilePath) {
@@ -350,13 +459,16 @@ function clearAllProductImages() {
   });
 }
 
-function seedMenuData() {
+function seedMenuData(options = {}) {
   if (!isCloudReady()) {
     return Promise.reject(new Error('cloud is not ready'));
   }
 
   return callCloudFunction('menuAdmin', {
-    action: 'seed'
+    action: 'seed',
+    categories: options.categories || [],
+    products: options.products || [],
+    overwrite: Boolean(options.overwrite)
   });
 }
 
@@ -373,9 +485,14 @@ module.exports = {
   completeOrder,
   notifyCompletedOrder,
   deleteCompletedOrder,
+  deleteAdminOrder,
   deleteOrder,
   deleteOrders,
+  requestCancelOrder,
+  approveCancelOrder,
+  rejectCancelOrder,
   createProduct,
+  updateProduct,
   deleteProduct,
   uploadProductImage,
   updateProductImage,

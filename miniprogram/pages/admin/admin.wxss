@@ -97,9 +97,9 @@
 
 .order-refresh-btn,
 .complete-order-btn,
-.delete-completed-order-btn {
+.delete-order-btn {
   height: 58rpx;
-  line-height: 58rpx;
+  line-height: 1;
   padding: 0 22rpx;
   margin: 0;
   border-radius: 29rpx;
@@ -150,10 +150,15 @@
 }
 
 .admin-order-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
+  min-width: 88rpx;
   height: 44rpx;
-  line-height: 44rpx;
+  line-height: 1;
   padding: 0 16rpx;
+  box-sizing: border-box;
   border-radius: 22rpx;
   color: #B87920;
   background: rgba(255, 184, 84, 0.16);
@@ -164,6 +169,40 @@
 .admin-order-status.completed {
   color: #1F8A59;
   background: rgba(31, 138, 89, 0.12);
+}
+
+.admin-order-status.cancelled {
+  color: #C9606E;
+  background: rgba(255, 123, 137, 0.10);
+}
+
+.admin-status-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.admin-order-cancel-tag {
+  height: 36rpx;
+  line-height: 1;
+  padding: 0 10rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18rpx;
+  font-size: 20rpx;
+  font-weight: 800;
+}
+
+.admin-order-cancel-tag.pending {
+  color: #8B6F5E;
+  background: rgba(160, 128, 112, 0.12);
+}
+
+.admin-order-cancel-tag.rejected {
+  color: #B87920;
+  background: rgba(255, 184, 84, 0.14);
 }
 
 .admin-order-meta {
@@ -214,20 +253,18 @@
   width: 100%;
 }
 
-.admin-order-actions.completed-actions {
-  display: flex;
-  justify-content: center;
+.admin-order-actions.single-action {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .complete-order-btn {
-  grid-column: 1 / -1;
   width: 100%;
   color: #FFFFFF;
   background: linear-gradient(135deg, #FF7B89 0%, #FF9AAE 100%);
 }
 
-.delete-completed-order-btn {
-  width: 320rpx;
+.delete-order-btn {
+  width: 100%;
   color: #8B6F5E;
   background: #FFF3EC;
 }
@@ -237,11 +274,14 @@
 .clear-all-btn {
   flex: 1;
   height: 76rpx;
-  line-height: 76rpx;
+  line-height: 1;
   padding: 0;
   margin: 0;
   border-radius: 38rpx;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 26rpx;
   font-weight: 900;
 }
@@ -269,14 +309,144 @@
 .clear-all-btn::after,
 .order-refresh-btn::after,
 .complete-order-btn::after,
-.delete-completed-order-btn::after,
+.delete-order-btn::after,
 .pick-btn::after,
 .clear-item-btn::after,
+.edit-product-btn::after,
+.form-image-btn::after,
 .delete-product-btn::after,
 .category-submit::after,
 .category-delete::after,
 .form-close::after,
 .submit-product-btn::after {
+  border: 0;
+}
+
+/* ===== 取消申请管理 ===== */
+.cancel-manager {
+  margin-bottom: 24rpx;
+  padding: 22rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 251, 247, 0.88);
+  border: 2rpx solid rgba(255, 123, 137, 0.15);
+  box-shadow: 0 10rpx 28rpx rgba(255, 150, 140, 0.08);
+}
+
+.cancel-manager-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.cancel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.cancel-card {
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #FFFFFF;
+  border: 2rpx solid rgba(255, 200, 180, 0.18);
+}
+
+.cancel-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.cancel-order-id {
+  display: block;
+  color: #5C3D2E;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.cancel-order-time {
+  display: block;
+  margin-top: 6rpx;
+  color: #A08070;
+  font-size: 22rpx;
+  line-height: 1.3;
+}
+
+.cancel-badge {
+  flex-shrink: 0;
+  height: 44rpx;
+  line-height: 1;
+  padding: 0 16rpx;
+  border-radius: 22rpx;
+  color: #8B6F5E;
+  background: rgba(160, 128, 112, 0.12);
+  font-size: 22rpx;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancel-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 14rpx;
+  margin-top: 14rpx;
+  color: #5C3D2E;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.cancel-card-dishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 14rpx;
+}
+
+.cancel-card-dishes text {
+  max-width: 100%;
+  padding: 7rpx 12rpx;
+  border-radius: 16rpx;
+  color: #8B6F5E;
+  background: #FFF3EC;
+  font-size: 22rpx;
+  line-height: 1.25;
+}
+
+.cancel-card-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.reject-btn,
+.approve-btn {
+  flex: 1;
+  height: 58rpx;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  border-radius: 29rpx;
+  font-size: 23rpx;
+  font-weight: 900;
+}
+
+.reject-btn {
+  color: #FF7B89;
+  background: rgba(255, 123, 137, 0.08);
+}
+
+.approve-btn {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #7EC8A0, #5DA87A);
+}
+
+.reject-btn::after,
+.approve-btn::after {
   border: 0;
 }
 
@@ -315,12 +485,15 @@
 .category-count {
   min-width: 82rpx;
   height: 44rpx;
-  line-height: 44rpx;
+  line-height: 1;
   padding: 0 16rpx;
   border-radius: 22rpx;
   color: #B87920;
   background: rgba(255, 184, 84, 0.16);
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 22rpx;
   font-weight: 900;
 }
@@ -346,7 +519,7 @@
 .category-submit {
   width: 116rpx;
   height: 70rpx;
-  line-height: 70rpx;
+  line-height: 1;
   padding: 0;
   margin: 0;
   border-radius: 35rpx;
@@ -387,7 +560,7 @@
   flex: 0 0 42rpx;
   width: 42rpx;
   height: 42rpx;
-  line-height: 38rpx;
+  line-height: 1;
   padding: 0;
   margin: 0 0 0 8rpx;
   border-radius: 21rpx;
@@ -435,7 +608,7 @@
 .form-close {
   width: 58rpx;
   height: 58rpx;
-  line-height: 54rpx;
+  line-height: 1;
   padding: 0;
   margin: 0;
   border-radius: 29rpx;
@@ -443,6 +616,77 @@
   background: rgba(255, 123, 137, 0.10);
   font-size: 34rpx;
   font-weight: 700;
+}
+
+.form-image-editor {
+  display: flex;
+  gap: 18rpx;
+  margin-bottom: 20rpx;
+  padding: 16rpx;
+  border-radius: 20rpx;
+  background: #FFF3EC;
+  border: 2rpx solid rgba(255, 180, 160, 0.18);
+}
+
+.form-image-preview {
+  width: 150rpx;
+  height: 150rpx;
+  flex: 0 0 150rpx;
+  overflow: hidden;
+  border-radius: 16rpx;
+  background: #FFFBF7;
+}
+
+.form-image,
+.form-image-empty {
+  width: 100%;
+  height: 100%;
+}
+
+.form-image-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  color: #FF7B89;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.form-image-plus {
+  font-size: 38rpx;
+  line-height: 1;
+}
+
+.form-image-actions {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14rpx;
+}
+
+.form-image-btn {
+  width: 100%;
+  height: 60rpx;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  font-weight: 900;
+}
+
+.form-image-btn.primary {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF7B89 0%, #FF9AAE 100%);
+}
+
+.form-image-btn.ghost {
+  color: #FF7B89;
+  background: rgba(255, 123, 137, 0.08);
 }
 
 .field {
@@ -500,7 +744,7 @@
 
 .submit-product-btn {
   height: 76rpx;
-  line-height: 76rpx;
+  line-height: 1;
   padding: 0;
   margin: 0;
   border-radius: 38rpx;
@@ -529,8 +773,9 @@
 
 .admin-card {
   display: flex;
-  gap: 20rpx;
-  padding: 18rpx;
+  gap: 16rpx;
+  padding: 16rpx;
+  overflow: hidden;
   border-radius: 20rpx;
   background: rgba(255, 251, 247, 0.94);
   border: 2rpx solid rgba(255, 200, 180, 0.16);
@@ -538,9 +783,9 @@
 }
 
 .admin-preview {
-  width: 180rpx;
-  height: 180rpx;
-  flex: 0 0 180rpx;
+  width: 150rpx;
+  height: 150rpx;
+  flex: 0 0 150rpx;
   overflow: hidden;
   border-radius: 16rpx;
   background: #FFF3EC;
@@ -567,7 +812,7 @@
 .admin-preview-plus {
   width: 52rpx;
   height: 52rpx;
-  line-height: 48rpx;
+  line-height: 1;
   border-radius: 26rpx;
   text-align: center;
   font-size: 42rpx;
@@ -595,7 +840,7 @@
 .admin-dish-name {
   display: block;
   color: #5C3D2E;
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 900;
   line-height: 1.25;
   overflow: hidden;
@@ -607,7 +852,7 @@
   display: -webkit-box;
   margin-top: 8rpx;
   color: #8B6F5E;
-  font-size: 23rpx;
+  font-size: 22rpx;
   line-height: 1.45;
   overflow: hidden;
   -webkit-line-clamp: 2;
@@ -623,16 +868,16 @@
 
 .admin-dish-price {
   color: #FF7B89;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 900;
 }
 
 .admin-dish-tag {
   max-width: 160rpx;
-  height: 38rpx;
-  line-height: 38rpx;
-  padding: 0 14rpx;
-  border-radius: 19rpx;
+  height: 34rpx;
+  line-height: 1;
+  padding: 0 12rpx;
+  border-radius: 17rpx;
   color: #B87920;
   background: rgba(255, 184, 84, 0.16);
   font-size: 21rpx;
@@ -640,42 +885,55 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .admin-actions {
   display: flex;
-  align-items: center;
-  gap: 12rpx;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   margin-top: auto;
-  padding-top: 16rpx;
+  padding-top: 12rpx;
 }
 
 .pick-btn,
 .clear-item-btn,
+.edit-product-btn,
 .delete-product-btn {
-  height: 58rpx;
-  line-height: 58rpx;
+  flex: 0 0 calc((100% - 10rpx) / 2);
+  max-width: calc((100% - 10rpx) / 2);
+  width: auto;
+  min-width: 0;
+  height: 48rpx;
+  line-height: 1;
   padding: 0;
   margin: 0;
-  border-radius: 29rpx;
-  font-size: 23rpx;
+  border-radius: 14rpx;
+  font-size: 20rpx;
   font-weight: 900;
 }
 
+.edit-product-btn {
+  color: #5DA87A;
+  background: rgba(126, 200, 160, 0.12);
+}
+
 .pick-btn {
-  flex: 1;
   color: #FFFFFF;
   background: linear-gradient(135deg, #FF7B89 0%, #FF9AAE 100%);
 }
 
 .clear-item-btn {
-  width: 104rpx;
   color: #FF7B89;
   background: rgba(255, 123, 137, 0.08);
 }
 
 .delete-product-btn {
-  width: 104rpx;
   color: #FFFFFF;
   background: #5C3D2E;
 }

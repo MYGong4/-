@@ -35,7 +35,65 @@ function withoutId(item) {
   return next;
 }
 
-async function seedMenu() {
+function normalizeSeedCategory(item = {}, index) {
+  const name = String(item.name || '').trim();
+  if (!name) return null;
+  return {
+    _id: String(item._id || `cat-${Date.now()}-${index}`),
+    name,
+    sort: Number(item.sort) || index + 1
+  };
+}
+
+function normalizeSeedProduct(item = {}, index) {
+  const name = String(item.name || '').trim();
+  const categoryId = String(item.categoryId || '').trim();
+  const price = Number(item.price);
+  if (!name || !categoryId || !Number.isFinite(price) || price <= 0) return null;
+  return {
+    _id: String(item._id || `product-${Date.now()}-${index}`),
+    categoryId,
+    name,
+    description: String(item.description || '').trim(),
+    price,
+    sales: Number(item.sales) || 0,
+    tag: String(item.tag || '').trim(),
+    image: String(item.image || ''),
+    available: item.available !== false,
+    sort: Number(item.sort) || index + 1
+  };
+}
+
+async function removeAllDocs(collectionName) {
+  const res = await db.collection(collectionName).limit(100).get();
+  const docs = res.data || [];
+  await Promise.all(docs.map((item) => (
+    db.collection(collectionName).doc(item._id).remove()
+  )));
+  return docs.length;
+}
+
+async function seedMenu(options = {}) {
+  const categories = (Array.isArray(options.categories) && options.categories.length
+    ? options.categories
+    : mock.categories)
+    .map(normalizeSeedCategory)
+    .filter(Boolean);
+  const products = (Array.isArray(options.products) && options.products.length
+    ? options.products
+    : mock.products)
+    .map(normalizeSeedProduct)
+    .filter(Boolean);
+
+  if (!categories.length || !products.length) {
+    throw new Error('seed menu is empty');
+  }
+
+  if (options.overwrite) {
+    await removeAllDocs(COLLECTIONS.products);
+    await removeAllDocs(COLLECTIONS.categories);
+  }
+
   const [categoryRes, productRes] = await Promise.all([
     db.collection(COLLECTIONS.categories).limit(1).get(),
     db.collection(COLLECTIONS.products).limit(1).get()
@@ -49,14 +107,14 @@ async function seedMenu() {
     };
   }
 
-  const categoryTasks = hasCategories ? [] : mock.categories.map((item) => (
+  const categoryTasks = hasCategories ? [] : categories.map((item) => (
     db.collection(COLLECTIONS.categories).doc(item._id).set({
       data: Object.assign(withoutId(item), {
         createdAt: db.serverDate()
       })
     })
   ));
-  const productTasks = hasProducts ? [] : mock.products.map((item, index) => (
+  const productTasks = hasProducts ? [] : products.map((item, index) => (
     db.collection(COLLECTIONS.products).doc(item._id).set({
       data: Object.assign(withoutId(item), {
         sort: index + 1,
@@ -69,7 +127,9 @@ async function seedMenu() {
   await Promise.all(categoryTasks.concat(productTasks));
   return {
     ok: true,
-    skipped: false
+    skipped: false,
+    categoryCount: categories.length,
+    productCount: products.length
   };
 }
 
@@ -164,6 +224,34 @@ async function createProduct(product = {}) {
   };
 }
 
+async function updateProduct(productId, product = {}) {
+  if (!productId) throw new Error('product id required');
+  const name = String(product.name || '').trim();
+  const categoryId = String(product.categoryId || '').trim();
+  const price = Number(product.price);
+  if (!name || !categoryId || !Number.isFinite(price) || price <= 0) {
+    throw new Error('invalid product');
+  }
+
+  await db.collection(COLLECTIONS.products).doc(productId).update({
+    data: {
+      categoryId,
+      name,
+      description: String(product.description || '').trim(),
+      price,
+      sales: Number(product.sales) || 0,
+      tag: String(product.tag || '').trim(),
+      image: String(product.image || ''),
+      available: product.available !== false,
+      sort: Number(product.sort) || Date.now(),
+      updatedAt: db.serverDate()
+    }
+  });
+  return {
+    ok: true
+  };
+}
+
 async function deleteProduct(productId) {
   if (!productId) throw new Error('product id required');
   const res = await db.collection(COLLECTIONS.products).doc(productId).remove();
@@ -220,7 +308,11 @@ exports.main = async (event = {}) => {
   assertAdmin();
 
   if (action === 'seed') {
-    return seedMenu();
+    return seedMenu({
+      categories: event.categories,
+      products: event.products,
+      overwrite: Boolean(event.overwrite)
+    });
   }
   if (action === 'createCategory') {
     return createCategory(event.category);
@@ -230,6 +322,9 @@ exports.main = async (event = {}) => {
   }
   if (action === 'createProduct') {
     return createProduct(event.product);
+  }
+  if (action === 'updateProduct') {
+    return updateProduct(event.productId, event.product);
   }
   if (action === 'deleteProduct') {
     return deleteProduct(event.productId);

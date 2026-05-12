@@ -3,9 +3,7 @@ const api = require('../../utils/api');
 Page({
   data: {
     orders: [],
-    loading: true,
-    manageMode: false,
-    selectedOrderIds: []
+    loading: true
   },
 
   onShow() {
@@ -26,121 +24,47 @@ Page({
           const time = api.formatOrderTime(order.createdAt || order.serverCreatedAt);
           const itemCount = (order.items || []).reduce((total, item) => total + item.count, 0);
           const shortId = order._id ? String(order._id).slice(-8) : '';
-          return Object.assign({}, order, { time, itemCount, shortId });
+          return Object.assign({}, order, { time, itemCount, shortId, requesting: false });
         });
-        const selectedSet = this.data.selectedOrderIds.reduce((map, id) => {
-          map[id] = true;
-          return map;
-        }, {});
-        this.setData({
-          orders: orders.map((order) => Object.assign({}, order, {
-            selected: Boolean(selectedSet[order._id])
-          }))
-        });
+        this.setData({ orders });
       })
       .catch(() => {
-        wx.showToast({
-          title: '订单加载失败',
-          icon: 'none'
-        });
+        wx.showToast({ title: '订单加载失败', icon: 'none' });
       })
       .finally(() => {
         this.setData({ loading: false });
       });
   },
 
-  toggleManageMode() {
-    const next = !this.data.manageMode;
-    this.setData({
-      manageMode: next,
-      selectedOrderIds: next ? this.data.selectedOrderIds : [],
-      orders: this.data.orders.map((order) => Object.assign({}, order, { selected: false }))
-    });
-  },
-
-  toggleSelect(event) {
-    if (!this.data.manageMode) return;
-    const id = event.currentTarget.dataset.id;
-    const selectedOrderIds = this.data.selectedOrderIds.includes(id)
-      ? this.data.selectedOrderIds.filter((item) => item !== id)
-      : this.data.selectedOrderIds.concat(id);
-    const selectedSet = selectedOrderIds.reduce((map, item) => {
-      map[item] = true;
-      return map;
-    }, {});
-    this.setData({
-      selectedOrderIds,
-      orders: this.data.orders.map((order) => Object.assign({}, order, {
-        selected: Boolean(selectedSet[order._id])
-      }))
-    });
-  },
-
-  selectAll() {
-    const allSelected = this.data.selectedOrderIds.length === this.data.orders.length;
-    const selectedOrderIds = allSelected ? [] : this.data.orders.map((order) => order._id);
-    const selectedSet = selectedOrderIds.reduce((map, id) => {
-      map[id] = true;
-      return map;
-    }, {});
-    this.setData({
-      selectedOrderIds,
-      orders: this.data.orders.map((order) => Object.assign({}, order, {
-        selected: Boolean(selectedSet[order._id])
-      }))
-    });
-  },
-
-  deleteOrder(event) {
-    const id = event.currentTarget.dataset.id;
-    this.confirmDelete([id]);
-  },
-
-  deleteSelected() {
-    this.confirmDelete(this.data.selectedOrderIds);
-  },
-
-  confirmDelete(ids) {
-    const targets = ids.filter(Boolean);
-    if (!targets.length) {
-      wx.showToast({
-        title: '先选择订单',
-        icon: 'none'
-      });
-      return;
-    }
-
+  requestCancel(e) {
+    const id = e.currentTarget.dataset.id;
     wx.showModal({
-      title: '删除订单',
-      content: `确定删除 ${targets.length} 笔订单吗？`,
-      confirmText: '删除',
+      title: '申请取消订单',
+      content: '确定要申请取消这笔订单吗？管理员审核通过后订单将被取消。',
+      confirmText: '确定申请',
+      cancelText: '再想想',
+      confirmColor: '#FF7B89',
       success: (res) => {
         if (!res.confirm) return;
-        api.deleteOrders(targets)
+        this.setData({
+          orders: this.data.orders.map((order) => (
+            order._id === id ? Object.assign({}, order, { requesting: true }) : order
+          ))
+        });
+        api.requestCancelOrder(id)
           .then(() => {
-            wx.showToast({
-              title: '已删除',
-              icon: 'success'
-            });
-            this.setData({
-              selectedOrderIds: [],
-              manageMode: false
-            });
+            wx.showToast({ title: '已提交申请', icon: 'success' });
             this.loadOrders();
           })
           .catch(() => {
-            wx.showToast({
-              title: '删除失败',
-              icon: 'none'
-            });
+            wx.showToast({ title: '申请失败，请稍后重试', icon: 'none' });
+            this.loadOrders();
           });
       }
     });
   },
 
   goMenu() {
-    wx.switchTab({
-      url: '/pages/home/home'
-    });
+    wx.switchTab({ url: '/pages/home/home' });
   }
 });

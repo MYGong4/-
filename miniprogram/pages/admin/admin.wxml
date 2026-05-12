@@ -11,7 +11,7 @@
   </view>
 
   <view class="admin-toolbar">
-    <button class="seed-btn" bindtap="seedMenuData">初始化云菜单</button>
+    <button class="seed-btn" bindtap="seedMenuData">设为初始化云菜单</button>
     <button class="add-product-btn" bindtap="openProductForm">新增菜品</button>
     <button class="clear-all-btn" bindtap="clearAll">清除全部配图</button>
   </view>
@@ -32,9 +32,13 @@
             <text class="admin-order-id">订单尾号 {{item.shortId}}</text>
             <text class="admin-order-time">{{item.time}}</text>
           </view>
-          <text class="admin-order-status {{item.status === 'completed' ? 'completed' : ''}}">
-            {{item.status === 'completed' ? '已完成' : '已下单'}}
-          </text>
+          <view class="admin-status-group">
+            <text class="admin-order-status {{item.status === 'completed' ? 'completed' : ''}} {{item.status === 'cancelled' ? 'cancelled' : ''}}">
+              {{item.status === 'cancelled' ? '已取消' : item.status === 'completed' ? '已完成' : '已下单'}}
+            </text>
+            <text wx:if="{{item.cancelStatus === 'pending'}}" class="admin-order-cancel-tag pending">待审核</text>
+            <text wx:elif="{{item.cancelStatus === 'rejected'}}" class="admin-order-cancel-tag rejected">已拒绝</text>
+          </view>
         </view>
         <view class="admin-order-meta">
           <text>{{item.contact.contactName}}</text>
@@ -47,9 +51,9 @@
         <view class="admin-order-foot">
           <text class="admin-order-finished-time" wx:if="{{item.completedTime}}">完成：{{item.completedTime}}</text>
           <text class="admin-order-finished-time" wx:else>完成后自动发送订单完成通知</text>
-          <view class="admin-order-actions {{item.status === 'completed' ? 'completed-actions' : ''}}">
+          <view class="admin-order-actions {{item.status === 'created' ? '' : 'single-action'}}">
             <button
-              wx:if="{{item.status !== 'completed'}}"
+              wx:if="{{item.status === 'created'}}"
               class="complete-order-btn"
               loading="{{item.completing}}"
               data-id="{{item._id}}"
@@ -58,15 +62,46 @@
               完成并通知
             </button>
             <button
-              wx:if="{{item.status === 'completed'}}"
-              class="delete-completed-order-btn"
+              class="delete-order-btn"
               loading="{{item.deleting}}"
               data-id="{{item._id}}"
-              catchtap="deleteCompletedOrder"
+              catchtap="deleteAdminOrder"
             >
               删除
             </button>
           </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Cancel Requests -->
+  <view class="cancel-manager" wx:if="{{hasCancelRequests}}">
+    <view class="cancel-manager-head">
+      <view>
+        <text class="section-eyebrow">取消申请</text>
+        <text class="section-title">待处理</text>
+      </view>
+    </view>
+    <view class="cancel-list">
+      <view class="cancel-card" wx:for="{{orders}}" wx:key="_id" wx:if="{{item.cancelStatus === 'pending'}}">
+        <view class="cancel-card-head">
+          <view>
+            <text class="cancel-order-id">订单尾号 {{item.shortId}}</text>
+            <text class="cancel-order-time">{{item.time}}</text>
+          </view>
+          <text class="cancel-badge">待审核</text>
+        </view>
+        <view class="cancel-card-meta">
+          <text>{{item.contact.contactName}} · {{item.contact.phone}}</text>
+          <text>{{item.itemCount}} 件 · ￥{{item.payable}}</text>
+        </view>
+        <view class="cancel-card-dishes">
+          <text wx:for="{{item.items}}" wx:for-item="dish" wx:key="productId">{{dish.name}} x {{dish.count}}</text>
+        </view>
+        <view class="cancel-card-actions">
+          <button class="reject-btn" loading="{{item.rejecting}}" data-id="{{item._id}}" catchtap="rejectCancel">拒绝</button>
+          <button class="approve-btn" loading="{{item.approving}}" data-id="{{item._id}}" catchtap="approveCancel">同意取消</button>
         </view>
       </view>
     </view>
@@ -111,8 +146,23 @@
   <view class="product-form-mask" wx:if="{{showProductForm}}" catchtap="closeProductForm">
     <view class="product-form-panel" catchtap="noop">
       <view class="form-head">
-        <text class="form-title">新增菜品</text>
+        <text class="form-title">{{editingProductId ? '编辑菜品' : '新增菜品'}}</text>
         <button class="form-close" bindtap="closeProductForm">×</button>
+      </view>
+      <view class="form-image-editor" wx:if="{{editingProductId}}">
+        <view class="form-image-preview" bindtap="pickProductFormImage">
+          <image wx:if="{{productForm.image}}" class="form-image" src="{{productForm.image}}" mode="aspectFill" />
+          <view wx:else class="form-image-empty">
+            <text class="form-image-plus">+</text>
+            <text>添加图片</text>
+          </view>
+        </view>
+        <view class="form-image-actions">
+          <button class="form-image-btn primary" loading="{{formUploading}}" bindtap="pickProductFormImage">
+            {{productForm.image ? '更换图片' : '上传图片'}}
+          </button>
+          <button wx:if="{{productForm.image}}" class="form-image-btn ghost" bindtap="clearProductFormImage">清除图片</button>
+        </view>
       </view>
       <view class="field">
         <text class="field-label">分类</text>
@@ -146,7 +196,7 @@
         <text>上架售卖</text>
         <switch checked="{{productForm.available}}" color="#FF7B89" bindchange="toggleAvailable" />
       </view>
-      <button class="submit-product-btn" bindtap="submitProduct">保存菜品</button>
+      <button class="submit-product-btn" bindtap="submitProduct">{{editingProductId ? '保存修改' : '保存菜品'}}</button>
     </view>
   </view>
 
@@ -178,8 +228,9 @@
           <text class="admin-dish-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
         </view>
         <view class="admin-actions">
+          <button class="edit-product-btn" data-id="{{item._id}}" bindtap="editProduct">编辑</button>
           <button class="pick-btn" data-id="{{item._id}}" bindtap="pickImage">
-            {{uploadingId === item._id ? '上传中' : (item.image ? '更换图片' : '选择图片')}}
+            {{uploadingId === item._id ? '上传中' : (item.image ? '换图' : '选图')}}
           </button>
           <button
             wx:if="{{item.image}}"
@@ -187,7 +238,7 @@
             data-id="{{item._id}}"
             bindtap="clearImage"
           >
-            清除
+            清图
           </button>
           <button class="delete-product-btn" data-id="{{item._id}}" bindtap="deleteProduct">删除</button>
         </view>

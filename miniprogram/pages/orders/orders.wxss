@@ -305,6 +305,21 @@
   font-weight: 900;
 }
 
+.status.status-cancel-pending {
+  background: rgba(160, 128, 112, 0.12);
+  color: #8B6F5E;
+}
+
+.status.status-cancelled {
+  background: rgba(255, 123, 137, 0.10);
+  color: #C9606E;
+}
+
+.status.status-rejected {
+  background: rgba(160, 128, 112, 0.10);
+  color: #8B6F5E;
+}
+
 .order-summary-strip {
   display: flex;
   gap: 16rpx;
@@ -363,17 +378,57 @@
   margin-top: 16rpx;
 }
 
-.delete-order-btn {
-  width: 118rpx;
+.cancel-request-btn {
   height: 54rpx;
   line-height: 54rpx;
-  padding: 0;
+  padding: 0 24rpx;
   margin: 0;
   border-radius: 27rpx;
+  color: #8B6F5E;
+  background: rgba(160, 128, 112, 0.08);
+  border: 2rpx solid rgba(160, 128, 112, 0.12);
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.cancel-request-btn::after {
+  border: 0;
+}
+
+.cancel-hint {
+  text-align: right;
+  font-size: 23rpx;
+  color: #A08070;
+  padding: 8rpx 0;
+}
+
+.cancel-hint.cancelled {
+  color: #C9606E;
+}
+
+.cancel-hint.rejected {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16rpx;
+  color: #8B6F5E;
+}
+
+.retry-cancel-btn {
+  height: 50rpx;
+  line-height: 50rpx;
+  padding: 0 20rpx;
+  margin: 0;
+  border-radius: 25rpx;
   color: #FF7B89;
   background: rgba(255, 123, 137, 0.08);
-  font-size: 23rpx;
-  font-weight: 900;
+  font-size: 22rpx;
+  font-weight: 800;
+  border: 1rpx solid rgba(255, 123, 137, 0.15);
+}
+
+.retry-cancel-btn::after {
+  border: 0;
 }
 
 .dish-info {

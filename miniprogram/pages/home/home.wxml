@@ -1,11 +1,7 @@
 <view class="home-menu-page {{categoryDrawerOpen ? 'drawer-open' : ''}}">
   <view wx:if="{{isAdmin}}" class="admin-entry" bindtap="goAdmin">⚙</view>
 
-  <view class="catalog-rail" hover-class="catalog-rail-hover" bindtap="toggleCategoryDrawer">
-    <button class="catalog-toggle" catchtap="toggleCategoryDrawer" aria-label="打开菜品目录">
-      <image class="catalog-toggle-icon" src="/assets/icons/catalog.svg" mode="aspectFit" />
-    </button>
-  </view>
+  <view class="catalog-rail" hover-class="catalog-rail-hover" bindtap="toggleCategoryDrawer"></view>
 
   <view class="catalog-drawer {{categoryDrawerOpen ? 'show' : ''}}">
     <view class="catalog-head">
@@ -33,8 +29,8 @@
         <text class="store-line">{{store.slogan}}</text>
       </view>
       <view class="page-mark">
-        <text>{{currentIndex + 1}}</text>
-        <text>/{{products.length || 1}}</text>
+        <text>{{products.length ? currentIndex + 1 : 0}}</text>
+        <text>/{{products.length}}</text>
       </view>
     </view>
 

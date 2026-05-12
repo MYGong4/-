@@ -5,6 +5,7 @@ Page({
     addresses: [],
     mode: 'manage',
     editing: false,
+    pasteText: '',
     editData: {
       _id: '',
       name: '',
@@ -35,7 +36,7 @@ Page({
 
   loadAddresses() {
     const addresses = address.getAddresses();
-    this.setData({ addresses, editing: false });
+    this.setData({ addresses, editing: false, pasteText: '' });
   },
 
   onSelect(e) {
@@ -57,6 +58,7 @@ Page({
   onNew() {
     this.setData({
       editing: true,
+      pasteText: '',
       editData: {
         _id: '',
         name: '',
@@ -68,12 +70,51 @@ Page({
     });
   },
 
+  pasteAddress() {
+    wx.getClipboardData({
+      success: (res) => {
+        this.setData({
+          editing: true,
+          pasteText: res.data || ''
+        });
+        this.extractPasteText();
+      },
+      fail: () => {
+        wx.showToast({ title: '读取剪贴板失败', icon: 'none' });
+      }
+    });
+  },
+
   onEdit(e) {
     const addr = e.currentTarget.dataset.address;
     this.setData({
       editing: true,
+      pasteText: '',
       editData: Object.assign({}, addr)
     });
+  },
+
+  updatePasteText(e) {
+    this.setData({
+      pasteText: e.detail.value || ''
+    });
+  },
+
+  extractPasteText() {
+    const parsed = address.parseAddressText(this.data.pasteText);
+    if (!parsed || (!parsed.name && !parsed.phone && !parsed.address)) {
+      wx.showToast({ title: '请先粘贴地址', icon: 'none' });
+      return;
+    }
+    this.setData({
+      editData: Object.assign({}, this.data.editData, {
+        name: parsed.name || this.data.editData.name || '',
+        phone: parsed.phone || this.data.editData.phone || '',
+        address: parsed.address || this.data.editData.address || '',
+        tag: this.data.editData.tag || 'other'
+      })
+    });
+    wx.showToast({ title: '已提取信息', icon: 'success' });
   },
 
   onDelete(e) {

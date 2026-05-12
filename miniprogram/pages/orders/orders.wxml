@@ -20,33 +20,20 @@
       </view>
       <view class="header-actions">
         <button class="refresh-button" bindtap="loadOrders">刷新</button>
-        <button class="manage-button {{manageMode ? 'active' : ''}}" bindtap="toggleManageMode">
-          {{manageMode ? '完成' : '管理'}}
-        </button>
       </view>
-    </view>
-
-    <view class="batch-bar" wx:if="{{manageMode}}">
-      <button class="batch-ghost" bindtap="selectAll">
-        {{selectedOrderIds.length === orders.length ? '取消全选' : '全选'}}
-      </button>
-      <view class="batch-count">
-        <text>已选</text>
-        <text>{{selectedOrderIds.length}}</text>
-      </view>
-      <button class="batch-delete" bindtap="deleteSelected">删除</button>
     </view>
 
     <view class="order-list">
-    <view class="order-card {{item.selected ? 'selected' : ''}}" wx:for="{{orders}}" wx:key="_id" data-id="{{item._id}}" bindtap="toggleSelect">
+    <view class="order-card" wx:for="{{orders}}" wx:key="_id">
       <view class="order-head">
-        <view wx:if="{{manageMode}}" class="select-dot {{item.selected ? 'checked' : ''}}"></view>
         <view class="order-index">{{index + 1}}</view>
         <view class="order-main">
           <text class="order-id">订单尾号 {{item.shortId}}</text>
           <text class="order-time">{{item.time}}</text>
         </view>
-        <text class="status">{{item.status === 'created' ? '已下单' : item.status}}</text>
+        <text class="status {{item.cancelStatus === 'pending' ? 'status-cancel-pending' : item.cancelStatus === 'rejected' ? 'status-rejected' : item.cancelStatus === 'approved' || item.status === 'cancelled' ? 'status-cancelled' : ''}}">
+          {{item.cancelStatus === 'pending' ? '取消待审' : item.cancelStatus === 'rejected' ? '已拒绝' : item.cancelStatus === 'approved' || item.status === 'cancelled' ? '已取消' : item.status === 'completed' ? '已完成' : '已下单'}}
+        </text>
       </view>
 
       <view class="order-summary-strip">
@@ -74,8 +61,30 @@
         <text>合计</text>
         <text>￥{{item.payable}}</text>
       </view>
-      <view class="order-actions" wx:if="{{!manageMode}}">
-        <button class="delete-order-btn" catchtap="deleteOrder" data-id="{{item._id}}">删除</button>
+
+      <view class="order-actions">
+        <button
+          wx:if="{{item.status === 'created' && !item.cancelStatus}}"
+          class="cancel-request-btn"
+          loading="{{item.requesting}}"
+          data-id="{{item._id}}"
+          catchtap="requestCancel"
+        >申请取消</button>
+        <view wx:elif="{{item.cancelStatus === 'pending'}}" class="cancel-hint">
+          <text>等待管理员审核中</text>
+        </view>
+        <view wx:elif="{{item.cancelStatus === 'rejected'}}" class="cancel-hint rejected">
+          <text>取消申请已被拒绝</text>
+          <button
+            class="retry-cancel-btn"
+            loading="{{item.requesting}}"
+            data-id="{{item._id}}"
+            catchtap="requestCancel"
+          >重新申请</button>
+        </view>
+        <view wx:elif="{{item.cancelStatus === 'approved' || item.status === 'cancelled'}}" class="cancel-hint cancelled">
+          <text>该订单已取消</text>
+        </view>
       </view>
     </view>
     </view>
