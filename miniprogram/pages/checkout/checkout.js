@@ -1,5 +1,6 @@
 const api = require('../../utils/api');
 const cart = require('../../utils/cart');
+const address = require('../../utils/address');
 
 Page({
   data: {
@@ -16,11 +17,58 @@ Page({
       address: '',
       note: ''
     },
+    lastAddress: null,
     submitting: false
   },
 
   onLoad() {
     this.refresh();
+    this.loadLastAddress();
+  },
+
+  onShow() {
+    this.loadLastAddress();
+  },
+
+  loadLastAddress() {
+    const addr = address.getLastUsedAddress();
+    if (addr) {
+      this.setData({
+        lastAddress: addr,
+        'form.contactName': addr.name,
+        'form.phone': addr.phone,
+        'form.address': addr.address
+      });
+    }
+  },
+
+  goAddressPage() {
+    wx.navigateTo({
+      url: '/pages/address/address?mode=select'
+    });
+  },
+
+  goManageAddress() {
+    wx.navigateTo({
+      url: '/pages/address/address'
+    });
+  },
+
+  onAddressTap() {
+    if (this.data.lastAddress) {
+      wx.showActionSheet({
+        itemList: ['重新选择地址', '管理地址'],
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            wx.navigateTo({ url: '/pages/address/address?mode=select' });
+          } else if (res.tapIndex === 1) {
+            wx.navigateTo({ url: '/pages/address/address' });
+          }
+        }
+      });
+    } else {
+      this.goAddressPage();
+    }
   },
 
   refresh() {
@@ -78,14 +126,15 @@ Page({
     if (this.data.submitting) return;
 
     this.setData({ submitting: true });
-    api.createOrder({
+    api.requestOrderCompletedSubscribe()
+      .then(() => api.createOrder({
       items: this.data.items,
       amount: this.data.summary.amount,
       deliveryFee: this.data.deliveryFee,
       payable: this.data.payable,
       contact: form,
       source: 'miniprogram'
-    })
+    }))
       .then((res) => {
         if (!res.ok) throw new Error(res.message || 'submit failed');
         cart.clearCart();

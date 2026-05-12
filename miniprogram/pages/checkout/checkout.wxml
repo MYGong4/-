@@ -1,4 +1,23 @@
 <view class="page checkout-page">
+  <!-- Address Selection -->
+  <view class="address-picker-card" bindtap="onAddressTap">
+    <view class="ap-left" wx:if="{{lastAddress}}">
+      <text class="ap-icon">📍</text>
+      <view class="ap-info">
+        <view class="ap-contact">
+          <text class="ap-name">{{lastAddress.name}}</text>
+          <text class="ap-phone">{{lastAddress.phone}}</text>
+        </view>
+        <text class="ap-addr">{{lastAddress.address}}</text>
+      </view>
+    </view>
+    <view class="ap-left" wx:else>
+      <text class="ap-icon">📍</text>
+      <text class="ap-placeholder">点击选择收货地址</text>
+    </view>
+    <text class="ap-arrow">›</text>
+  </view>
+
   <view class="summary-card">
     <text class="summary-title">订单确认</text>
     <view class="summary-row">
@@ -16,7 +35,10 @@
   </view>
 
   <view class="form-card">
-    <text class="form-title">取餐/配送信息</text>
+    <view class="form-title-row">
+      <text class="form-title">取餐/配送信息</text>
+      <text class="form-title-link" bindtap="goManageAddress">管理地址</text>
+    </view>
     <input
       class="field"
       placeholder="联系人"

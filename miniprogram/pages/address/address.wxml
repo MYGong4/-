@@ -1,0 +1,118 @@
+<view class="page address-page">
+  <!-- Address List -->
+  <view class="address-list" wx:if="{{!editing}}">
+    <block wx:if="{{addresses.length}}">
+      <view
+        class="address-card {{mode === 'select' ? 'selectable' : ''}}"
+        wx:for="{{addresses}}"
+        wx:key="_id"
+        data-address="{{item}}"
+        bindtap="{{mode === 'select' ? 'onSelect' : ''}}"
+      >
+        <view class="card-left">
+          <view class="contact-row">
+            <text class="contact-name">{{item.name}}</text>
+            <text class="contact-phone">{{item.phone}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="tag-badge tag-{{item.tag}}">{{item.tag === 'home' ? '🏠' : item.tag === 'office' ? '🏢' : item.tag === 'school' ? '🎓' : '📍'}} {{item.tag === 'home' ? '家' : item.tag === 'office' ? '公司' : item.tag === 'school' ? '学校' : '其他'}}</text>
+            <text class="address-text">{{item.address}}</text>
+          </view>
+        </view>
+        <view class="card-right" wx:if="{{mode === 'manage'}}">
+          <view class="action-row">
+            <text class="action-btn edit-btn" data-address="{{item}}" catchtap="onEdit">编辑</text>
+            <text class="action-btn delete-btn" data-address="{{item}}" catchtap="onDelete">删除</text>
+          </view>
+          <view class="default-row" wx:if="{{!item.isDefault}}">
+            <text class="set-default" data-id="{{item._id}}" catchtap="onDefault">设为默认</text>
+          </view>
+          <view class="default-row" wx:else>
+            <text class="is-default">默认</text>
+          </view>
+        </view>
+        <view class="card-right" wx:else>
+          <text class="arrow-right">›</text>
+        </view>
+      </view>
+    </block>
+    <view class="empty" wx:else>
+      <text class="empty-emoji">📍</text>
+      <text class="empty-text">还没有保存地址</text>
+      <text class="empty-hint">点击下方按钮新增</text>
+    </view>
+  </view>
+
+  <!-- Edit Form -->
+  <view class="edit-form" wx:if="{{editing}}">
+    <view class="form-card">
+      <text class="form-title">{{editData._id ? '编辑地址' : '新增地址'}}</text>
+
+      <view class="field-group">
+        <text class="field-label">联系人</text>
+        <input
+          class="field-input"
+          placeholder="请输入姓名"
+          value="{{editData.name}}"
+          maxlength="20"
+          data-key="name"
+          bindinput="updateField"
+        />
+      </view>
+
+      <view class="field-group">
+        <text class="field-label">联系电话</text>
+        <input
+          class="field-input"
+          placeholder="请输入手机号"
+          type="number"
+          value="{{editData.phone}}"
+          maxlength="11"
+          data-key="phone"
+          bindinput="updateField"
+        />
+      </view>
+
+      <view class="field-group">
+        <text class="field-label">详细地址</text>
+        <textarea
+          class="field-textarea"
+          placeholder="请输入详细地址"
+          value="{{editData.address}}"
+          maxlength="100"
+          data-key="address"
+          bindinput="updateField"
+        />
+      </view>
+
+      <view class="field-group">
+        <text class="field-label">地址标签</text>
+        <view class="tag-picker">
+          <view
+            class="tag-option {{editData.tag === item.value ? 'active' : ''}}"
+            wx:for="{{tags}}"
+            wx:key="value"
+            data-tag="{{item.value}}"
+            bindtap="onTagSelect"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="form-actions">
+        <button class="cancel-btn" bindtap="onCancel">取消</button>
+        <button class="save-btn" bindtap="onSave">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- Bottom Bar -->
+  <view class="bottom-bar" wx:if="{{!editing}}">
+    <button class="add-btn" bindtap="onNew">
+      <text class="add-icon">＋</text>
+      <text>新增地址</text>
+    </button>
+    <view class="manage-entry" wx:if="{{mode === 'select'}}" bindtap="onManage">
+      <text>管理地址</text>
+    </view>
+  </view>
+</view>

@@ -1,4 +1,5 @@
 const mock = require('./mockData');
+const { ORDER_COMPLETED_TEMPLATE_ID } = require('../config/subscription');
 
 const COLLECTIONS = {
   categories: 'categories',
@@ -170,6 +171,20 @@ function createOrder(order) {
   });
 }
 
+function requestOrderCompletedSubscribe() {
+  if (!ORDER_COMPLETED_TEMPLATE_ID || !wx.requestSubscribeMessage) {
+    return Promise.resolve({ ok: false, skipped: true });
+  }
+
+  return new Promise((resolve) => {
+    wx.requestSubscribeMessage({
+      tmplIds: [ORDER_COMPLETED_TEMPLATE_ID],
+      success: (res) => resolve({ ok: true, result: res }),
+      fail: (error) => resolve({ ok: false, error })
+    });
+  });
+}
+
 function formatOrderTime(createdAt) {
   if (!createdAt) return '';
   const raw = createdAt.toDate ? createdAt.toDate() : createdAt;
@@ -197,6 +212,78 @@ function getOrders() {
   }).then((res) => ({
     data: res.data || []
   }));
+}
+
+function getAdminOrders() {
+  if (!isCloudReady()) {
+    const data = wx.getStorageSync('local_orders') || [];
+    return Promise.resolve({ data });
+  }
+
+  return callCloudFunction('orders', {
+    action: 'adminList'
+  }).then((res) => ({
+    data: res.data || []
+  }));
+}
+
+function completeOrder(id) {
+  if (!id) {
+    return Promise.reject(new Error('order id required'));
+  }
+
+  if (!isCloudReady()) {
+    const localOrders = wx.getStorageSync('local_orders') || [];
+    const completedAt = new Date().toISOString();
+    const next = localOrders.map((order) => (
+      order._id === id
+        ? Object.assign({}, order, { status: 'completed', completedAt })
+        : order
+    ));
+    wx.setStorageSync('local_orders', next);
+    return Promise.resolve({ ok: true, messageSent: false });
+  }
+
+  return callCloudFunction('orders', {
+    action: 'complete',
+    id
+  });
+}
+
+function notifyCompletedOrder(id) {
+  if (!id) {
+    return Promise.reject(new Error('order id required'));
+  }
+
+  if (!isCloudReady()) {
+    return Promise.resolve({ ok: true, messageSent: false });
+  }
+
+  return callCloudFunction('orders', {
+    action: 'notifyCompleted',
+    id
+  });
+}
+
+function deleteCompletedOrder(id) {
+  if (!id) {
+    return Promise.reject(new Error('order id required'));
+  }
+
+  if (!isCloudReady()) {
+    const localOrders = wx.getStorageSync('local_orders') || [];
+    const next = localOrders.filter((order) => order._id !== id);
+    wx.setStorageSync('local_orders', next);
+    return Promise.resolve({
+      ok: true,
+      count: localOrders.length - next.length
+    });
+  }
+
+  return callCloudFunction('orders', {
+    action: 'adminDeleteCompleted',
+    id
+  });
 }
 
 function deleteOrders(ids = []) {
@@ -280,7 +367,12 @@ module.exports = {
   createCategory,
   deleteCategory,
   createOrder,
+  requestOrderCompletedSubscribe,
   getOrders,
+  getAdminOrders,
+  completeOrder,
+  notifyCompletedOrder,
+  deleteCompletedOrder,
   deleteOrder,
   deleteOrders,
   createProduct,

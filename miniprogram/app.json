@@ -6,7 +6,9 @@
     "pages/cart/cart",
     "pages/checkout/checkout",
     "pages/orders/orders",
-    "pages/admin/admin"
+    "pages/profile/profile",
+    "pages/admin/admin",
+    "pages/address/address"
   ],
   "window": {
     "navigationBarTitleText": "鑫鑫今天吃什么呢",
@@ -37,6 +39,12 @@
         "text": "订单",
         "iconPath": "assets/tabbar/orders.png",
         "selectedIconPath": "assets/tabbar/orders-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile.png",
+        "selectedIconPath": "assets/tabbar/profile-active.png"
       }
     ]
   },

@@ -20,6 +20,76 @@
   background-position: 0 0, 40rpx 60rpx;
 }
 
+/* ===== 地址选择卡片 ===== */
+.address-picker-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 24rpx 22rpx;
+  padding: 28rpx 24rpx;
+  border-radius: 20rpx;
+  background: #FFFBF7;
+  border: 2rpx solid rgba(255, 123, 137, 0.15);
+  box-shadow: 0 8rpx 22rpx rgba(255, 150, 140, 0.08);
+}
+
+.ap-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+  overflow: hidden;
+}
+
+.ap-icon {
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.ap-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.ap-contact {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 6rpx;
+}
+
+.ap-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #5C3D2E;
+}
+
+.ap-phone {
+  font-size: 24rpx;
+  color: #A08070;
+}
+
+.ap-addr {
+  font-size: 26rpx;
+  color: #8B6F5E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.ap-placeholder {
+  font-size: 28rpx;
+  color: #C4AFA0;
+}
+
+.ap-arrow {
+  font-size: 36rpx;
+  color: #C4AFA0;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
 /* ===== 汇总卡片 ===== */
 .summary-card,
 .form-card,
@@ -41,6 +111,28 @@
   line-height: 1.25;
   color: #5C3D2E;
   padding-left: 12rpx;
+}
+
+.form-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22rpx;
+  padding-left: 12rpx;
+}
+
+.form-title-row .form-title {
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+.form-title-link {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #FF7B89;
+  padding: 6rpx 16rpx;
+  background: rgba(255, 123, 137, 0.08);
+  border-radius: 20rpx;
 }
 
 .summary-title::before {

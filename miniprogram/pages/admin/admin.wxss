@@ -27,6 +27,7 @@
 
 .admin-header,
 .admin-toolbar,
+.order-manager,
 .category-manager,
 .product-list,
 .admin-empty {
@@ -76,6 +77,161 @@
   margin-bottom: 24rpx;
 }
 
+.order-manager {
+  margin-bottom: 24rpx;
+  padding: 22rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 251, 247, 0.88);
+  border: 2rpx solid rgba(255, 200, 180, 0.18);
+  box-shadow: 0 10rpx 28rpx rgba(255, 150, 140, 0.08);
+}
+
+.order-manager-head,
+.admin-order-head,
+.admin-order-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14rpx;
+}
+
+.order-refresh-btn,
+.complete-order-btn,
+.delete-completed-order-btn {
+  height: 58rpx;
+  line-height: 58rpx;
+  padding: 0 22rpx;
+  margin: 0;
+  border-radius: 29rpx;
+  font-size: 23rpx;
+  font-weight: 900;
+}
+
+.order-refresh-btn {
+  color: #FF7B89;
+  background: rgba(255, 123, 137, 0.08);
+}
+
+.admin-order-empty {
+  padding: 30rpx 0 8rpx;
+  color: #A08070;
+  text-align: center;
+  font-size: 25rpx;
+}
+
+.admin-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.admin-order-card {
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #FFFFFF;
+  border: 2rpx solid rgba(255, 180, 160, 0.18);
+}
+
+.admin-order-id {
+  display: block;
+  color: #5C3D2E;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.admin-order-time {
+  display: block;
+  margin-top: 6rpx;
+  color: #A08070;
+  font-size: 22rpx;
+  line-height: 1.3;
+}
+
+.admin-order-status {
+  flex: 0 0 auto;
+  height: 44rpx;
+  line-height: 44rpx;
+  padding: 0 16rpx;
+  border-radius: 22rpx;
+  color: #B87920;
+  background: rgba(255, 184, 84, 0.16);
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.admin-order-status.completed {
+  color: #1F8A59;
+  background: rgba(31, 138, 89, 0.12);
+}
+
+.admin-order-meta {
+  justify-content: flex-start;
+  margin-top: 14rpx;
+  color: #5C3D2E;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.admin-order-dishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 14rpx;
+}
+
+.admin-order-dishes text {
+  max-width: 100%;
+  padding: 7rpx 12rpx;
+  border-radius: 16rpx;
+  color: #8B6F5E;
+  background: #FFF3EC;
+  font-size: 22rpx;
+  line-height: 1.25;
+}
+
+.admin-order-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12rpx;
+  margin-top: 16rpx;
+  color: #A08070;
+  font-size: 22rpx;
+}
+
+.admin-order-finished-time {
+  display: block;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.admin-order-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12rpx;
+  width: 100%;
+}
+
+.admin-order-actions.completed-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.complete-order-btn {
+  grid-column: 1 / -1;
+  width: 100%;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF7B89 0%, #FF9AAE 100%);
+}
+
+.delete-completed-order-btn {
+  width: 320rpx;
+  color: #8B6F5E;
+  background: #FFF3EC;
+}
+
 .seed-btn,
 .add-product-btn,
 .clear-all-btn {
@@ -111,6 +267,9 @@
 .seed-btn::after,
 .add-product-btn::after,
 .clear-all-btn::after,
+.order-refresh-btn::after,
+.complete-order-btn::after,
+.delete-completed-order-btn::after,
 .pick-btn::after,
 .clear-item-btn::after,
 .delete-product-btn::after,

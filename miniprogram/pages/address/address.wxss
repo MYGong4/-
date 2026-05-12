@@ -1,0 +1,336 @@
+.address-page {
+  min-height: 100vh;
+  background: #FFF5EC;
+  padding-bottom: 140rpx;
+}
+
+/* ===== Address List ===== */
+.address-list {
+  padding: 24rpx;
+}
+
+.address-card {
+  background: #FFFBF7;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 16rpx rgba(255, 123, 137, 0.08);
+}
+
+.address-card.selectable {
+  position: relative;
+}
+
+.address-card.selectable::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24rpx;
+  opacity: 0;
+  background: rgba(255, 123, 137, 0.04);
+  transition: opacity 0.2s;
+}
+
+.address-card.selectable:active::after {
+  opacity: 1;
+}
+
+.card-left {
+  flex: 1;
+  overflow: hidden;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.contact-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #5C3D2E;
+}
+
+.contact-phone {
+  font-size: 26rpx;
+  color: #A08070;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+}
+
+.tag-badge {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-top: 2rpx;
+}
+
+.tag-home {
+  background: rgba(255, 123, 137, 0.12);
+  color: #FF7B89;
+}
+
+.tag-office {
+  background: rgba(126, 200, 160, 0.12);
+  color: #5DA87A;
+}
+
+.tag-school {
+  background: rgba(255, 184, 84, 0.12);
+  color: #D4963A;
+}
+
+.tag-other {
+  background: rgba(160, 128, 112, 0.1);
+  color: #8B6F5E;
+}
+
+.address-text {
+  font-size: 26rpx;
+  color: #A08070;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Card Right */
+.card-right {
+  flex-shrink: 0;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
+}
+
+.action-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+}
+
+.edit-btn {
+  color: #7EC8A0;
+  background: rgba(126, 200, 160, 0.1);
+}
+
+.delete-btn {
+  color: #FF7B89;
+  background: rgba(255, 123, 137, 0.1);
+}
+
+.set-default {
+  font-size: 22rpx;
+  color: #FFB854;
+}
+
+.is-default {
+  font-size: 22rpx;
+  color: #FF7B89;
+  font-weight: 600;
+}
+
+.arrow-right {
+  font-size: 40rpx;
+  color: #C4AFA0;
+  font-weight: 300;
+}
+
+/* Empty */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 180rpx;
+}
+
+.empty-emoji {
+  font-size: 96rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #A08070;
+  margin-bottom: 8rpx;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #C4AFA0;
+}
+
+/* ===== Edit Form ===== */
+.edit-form {
+  padding: 24rpx;
+}
+
+.form-card {
+  background: #FFFBF7;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 123, 137, 0.08);
+}
+
+.form-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #5C3D2E;
+  display: block;
+  margin-bottom: 32rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid rgba(255, 123, 137, 0.12);
+}
+
+.field-group {
+  margin-bottom: 24rpx;
+}
+
+.field-label {
+  font-size: 26rpx;
+  color: #8B6F5E;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.field-input {
+  width: 100%;
+  height: 80rpx;
+  background: #FFF5EC;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #5C3D2E;
+  box-sizing: border-box;
+}
+
+.field-textarea {
+  width: 100%;
+  height: 120rpx;
+  background: #FFF5EC;
+  border-radius: 16rpx;
+  padding: 16rpx 24rpx;
+  font-size: 28rpx;
+  color: #5C3D2E;
+  box-sizing: border-box;
+}
+
+/* Tag Picker */
+.tag-picker {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.tag-option {
+  font-size: 26rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 40rpx;
+  background: #FFF5EC;
+  color: #A08070;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.tag-option.active {
+  background: rgba(255, 123, 137, 0.1);
+  color: #FF7B89;
+  border-color: #FF7B89;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.cancel-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #FFF5EC;
+  color: #A08070;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  text-align: center;
+  border: none;
+}
+
+.save-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: linear-gradient(135deg, #FF9AA4, #FF7B89);
+  color: #fff;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  text-align: center;
+  border: none;
+  box-shadow: 0 4rpx 12rpx rgba(255, 123, 137, 0.28);
+}
+
+button::after {
+  border: none;
+}
+
+/* ===== Bottom Bar ===== */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 245, 236, 0.95);
+  backdrop-filter: blur(10rpx);
+}
+
+.add-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #FF9AA4, #FF7B89);
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 123, 137, 0.28);
+}
+
+.add-icon {
+  font-size: 34rpx;
+  font-weight: 300;
+}
+
+.manage-entry {
+  text-align: center;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: #FF7B89;
+  font-weight: 600;
+  padding: 12rpx;
+}

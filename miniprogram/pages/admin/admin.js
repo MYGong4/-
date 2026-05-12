@@ -4,7 +4,9 @@ Page({
   data: {
     categories: [],
     products: [],
+    orders: [],
     loading: false,
+    ordersLoading: false,
     uploadingId: '',
     authorized: false,
     showProductForm: false,
@@ -29,6 +31,7 @@ Page({
   onShow() {
     if (!this.data.authorized) return;
     this.loadProducts();
+    this.loadOrders();
   },
 
   checkAdminAccess() {
@@ -37,6 +40,7 @@ Page({
         if (res.isAdmin) {
           this.setData({ authorized: true });
           this.loadProducts();
+          this.loadOrders();
           return;
         }
         wx.showToast({
@@ -79,6 +83,96 @@ Page({
       .finally(() => {
         this.setData({ loading: false });
       });
+  },
+
+  loadOrders() {
+    if (!this.data.authorized) return;
+    this.setData({ ordersLoading: true });
+    api.getAdminOrders()
+      .then((res) => {
+        const orders = (res.data || []).map((order) => {
+          const time = api.formatOrderTime(order.createdAt || order.serverCreatedAt);
+          const completedTime = api.formatOrderTime(order.completedAt || order.serverCompletedAt);
+          const itemCount = (order.items || []).reduce((total, item) => total + item.count, 0);
+          const shortId = order._id ? String(order._id).slice(-8) : '';
+          return Object.assign({}, order, {
+            time,
+            completedTime,
+            itemCount,
+            shortId,
+            completing: false
+          });
+        });
+        this.setData({ orders });
+      })
+      .catch(() => {
+        wx.showToast({
+          title: '订单加载失败',
+          icon: 'none'
+        });
+      })
+      .finally(() => {
+        this.setData({ ordersLoading: false });
+      });
+  },
+
+  completeOrder(event) {
+    const id = event.currentTarget.dataset.id;
+    if (!id) return;
+    const orders = this.data.orders.map((order) => (
+      order._id === id ? Object.assign({}, order, { completing: true }) : order
+    ));
+    this.setData({ orders });
+    api.completeOrder(id)
+      .then((res) => {
+        wx.showToast({
+          title: res.messageSent ? '已完成并通知' : '已标记完成',
+          icon: 'success'
+        });
+        this.loadOrders();
+      })
+      .catch(() => {
+        wx.showToast({
+          title: '完成订单失败',
+          icon: 'none'
+        });
+        this.loadOrders();
+      });
+  },
+
+  deleteCompletedOrder(event) {
+    const id = event.currentTarget.dataset.id;
+    if (!id) return;
+
+    wx.showModal({
+      title: '删除订单',
+      content: '确定删除这笔已完成订单吗？删除后不可恢复。',
+      confirmText: '删除',
+      confirmColor: '#FF7B89',
+      success: (res) => {
+        if (!res.confirm) return;
+        this.setData({
+          orders: this.data.orders.map((order) => (
+            order._id === id ? Object.assign({}, order, { deleting: true }) : order
+          ))
+        });
+        api.deleteCompletedOrder(id)
+          .then(() => {
+            wx.showToast({
+              title: '已删除',
+              icon: 'success'
+            });
+            this.loadOrders();
+          })
+          .catch(() => {
+            wx.showToast({
+              title: '删除失败',
+              icon: 'none'
+            });
+            this.loadOrders();
+          });
+      }
+    });
   },
 
   seedMenuData() {

@@ -16,6 +16,62 @@
     <button class="clear-all-btn" bindtap="clearAll">清除全部配图</button>
   </view>
 
+  <view class="order-manager">
+    <view class="order-manager-head">
+      <view>
+        <text class="section-eyebrow">订单通知</text>
+        <text class="section-title">最近订单</text>
+      </view>
+      <button class="order-refresh-btn" loading="{{ordersLoading}}" bindtap="loadOrders">刷新</button>
+    </view>
+    <view wx:if="{{orders.length === 0}}" class="admin-order-empty">暂无订单</view>
+    <view wx:else class="admin-order-list">
+      <view class="admin-order-card" wx:for="{{orders}}" wx:key="_id">
+        <view class="admin-order-head">
+          <view>
+            <text class="admin-order-id">订单尾号 {{item.shortId}}</text>
+            <text class="admin-order-time">{{item.time}}</text>
+          </view>
+          <text class="admin-order-status {{item.status === 'completed' ? 'completed' : ''}}">
+            {{item.status === 'completed' ? '已完成' : '已下单'}}
+          </text>
+        </view>
+        <view class="admin-order-meta">
+          <text>{{item.contact.contactName}}</text>
+          <text>{{item.itemCount}} 件</text>
+          <text>￥{{item.payable}}</text>
+        </view>
+        <view class="admin-order-dishes">
+          <text wx:for="{{item.items}}" wx:for-item="dish" wx:key="productId">{{dish.name}} x {{dish.count}}</text>
+        </view>
+        <view class="admin-order-foot">
+          <text class="admin-order-finished-time" wx:if="{{item.completedTime}}">完成：{{item.completedTime}}</text>
+          <text class="admin-order-finished-time" wx:else>完成后自动发送订单完成通知</text>
+          <view class="admin-order-actions {{item.status === 'completed' ? 'completed-actions' : ''}}">
+            <button
+              wx:if="{{item.status !== 'completed'}}"
+              class="complete-order-btn"
+              loading="{{item.completing}}"
+              data-id="{{item._id}}"
+              catchtap="completeOrder"
+            >
+              完成并通知
+            </button>
+            <button
+              wx:if="{{item.status === 'completed'}}"
+              class="delete-completed-order-btn"
+              loading="{{item.deleting}}"
+              data-id="{{item._id}}"
+              catchtap="deleteCompletedOrder"
+            >
+              删除
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
   <view class="category-manager">
     <view class="category-manager-head">
       <view>

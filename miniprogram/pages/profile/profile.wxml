@@ -1,0 +1,107 @@
+<view class="page profile-page">
+  <view class="profile-header">
+    <view>
+      <text class="eyebrow">个人中心</text>
+      <text class="profile-title">我的</text>
+    </view>
+    <button class="header-button" bindtap="goMenu">去点餐</button>
+  </view>
+
+  <view class="section">
+    <view class="section-head">
+      <view>
+        <text class="section-kicker">地址管理</text>
+        <text class="section-title-text">常用收货信息</text>
+      </view>
+      <button class="plain-button" bindtap="goAddressManage">管理</button>
+    </view>
+
+    <view class="default-address" wx:if="{{defaultAddress}}">
+      <view class="address-main">
+        <view class="address-contact">
+          <text class="contact-name">{{defaultAddress.name}}</text>
+          <text class="contact-phone">{{defaultAddress.phone}}</text>
+        </view>
+        <text class="address-detail">{{defaultAddress.address}}</text>
+      </view>
+      <text class="default-badge">自动使用</text>
+    </view>
+
+    <view class="empty-card" wx:else bindtap="goAddressManage">
+      <text class="empty-title">还没有保存地址</text>
+      <text class="empty-copy">新增后，结账填写信息时可直接选用。</text>
+    </view>
+
+    <view class="address-list" wx:if="{{addresses.length}}">
+      <view
+        class="address-row {{defaultAddress && defaultAddress._id === item._id ? 'active' : ''}}"
+        wx:for="{{addresses}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="useAddress"
+      >
+        <view class="address-row-text">
+          <text class="row-name">{{item.name}} {{item.phone}}</text>
+          <text class="row-address">{{item.address}}</text>
+        </view>
+        <text class="row-action">{{defaultAddress && defaultAddress._id === item._id ? '当前' : '使用'}}</text>
+      </view>
+    </view>
+
+    <button class="primary-button address-button" bindtap="goAddressSelect">
+      选择常用地址
+    </button>
+  </view>
+
+  <view class="section order-section">
+    <view class="section-head">
+      <view>
+        <text class="section-kicker">订单目录</text>
+        <text class="section-title-text">订单状态</text>
+      </view>
+      <button class="plain-button" bindtap="goOrders">全部</button>
+    </view>
+
+    <view class="order-tabs">
+      <view
+        class="order-tab {{activeOrderTab === 'unfinished' ? 'active' : ''}}"
+        data-tab="unfinished"
+        bindtap="switchOrderTab"
+      >
+        <text>未完成</text>
+        <text class="tab-count">{{unfinishedCount}}</text>
+      </view>
+      <view
+        class="order-tab {{activeOrderTab === 'completed' ? 'active' : ''}}"
+        data-tab="completed"
+        bindtap="switchOrderTab"
+      >
+        <text>已完成</text>
+        <text class="tab-count">{{completedCount}}</text>
+      </view>
+    </view>
+
+    <view class="orders-loading" wx:if="{{loadingOrders}}">正在加载订单</view>
+
+    <view class="empty-card" wx:elif="{{!displayOrders.length}}">
+      <text class="empty-title">{{activeOrderTab === 'completed' ? '暂无已完成订单' : '暂无未完成订单'}}</text>
+      <text class="empty-copy">下单后会自动出现在这里。</text>
+    </view>
+
+    <view class="profile-order-list" wx:else>
+      <view class="profile-order-card" wx:for="{{displayOrders}}" wx:key="_id">
+        <view class="order-card-head">
+          <view>
+            <text class="order-id">订单尾号 {{item.shortId}}</text>
+            <text class="order-time">{{item.time}}</text>
+          </view>
+          <text class="order-status {{item.status === 'completed' ? 'done' : ''}}">{{item.statusLabel}}</text>
+        </view>
+        <view class="order-card-foot">
+          <text>{{item.itemCount}} 件菜品</text>
+          <text class="price">￥{{item.payable}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
