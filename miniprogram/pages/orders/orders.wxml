@@ -1,0 +1,83 @@
+<view class="page orders-page">
+  <view wx:if="{{loading}}" class="orders-empty">
+    <view class="empty-mark loading-mark">📋</view>
+    <text class="empty-title">正在加载订单</text>
+    <text class="empty-copy">稍等一下，正在把你的点餐记录整理出来~</text>
+  </view>
+
+  <view wx:if="{{!loading && orders.length === 0}}" class="orders-empty">
+    <view class="empty-mark">📋</view>
+    <text class="empty-title">还没有订单</text>
+    <text class="empty-copy">先去挑几道想吃的，完成下单后这里会展示订单明细~</text>
+    <button class="primary-button empty-button" bindtap="goMenu">去点餐</button>
+  </view>
+
+  <block wx:if="{{!loading && orders.length > 0}}">
+    <view class="orders-header">
+      <view class="orders-title-block">
+        <text class="eyebrow">订单</text>
+        <text class="orders-title">最近 {{orders.length}} 笔订单</text>
+      </view>
+      <view class="header-actions">
+        <button class="refresh-button" bindtap="loadOrders">刷新</button>
+        <button class="manage-button {{manageMode ? 'active' : ''}}" bindtap="toggleManageMode">
+          {{manageMode ? '完成' : '管理'}}
+        </button>
+      </view>
+    </view>
+
+    <view class="batch-bar" wx:if="{{manageMode}}">
+      <button class="batch-ghost" bindtap="selectAll">
+        {{selectedOrderIds.length === orders.length ? '取消全选' : '全选'}}
+      </button>
+      <view class="batch-count">
+        <text>已选</text>
+        <text>{{selectedOrderIds.length}}</text>
+      </view>
+      <button class="batch-delete" bindtap="deleteSelected">删除</button>
+    </view>
+
+    <view class="order-list">
+    <view class="order-card {{item.selected ? 'selected' : ''}}" wx:for="{{orders}}" wx:key="_id" data-id="{{item._id}}" bindtap="toggleSelect">
+      <view class="order-head">
+        <view wx:if="{{manageMode}}" class="select-dot {{item.selected ? 'checked' : ''}}"></view>
+        <view class="order-index">{{index + 1}}</view>
+        <view class="order-main">
+          <text class="order-id">订单尾号 {{item.shortId}}</text>
+          <text class="order-time">{{item.time}}</text>
+        </view>
+        <text class="status">{{item.status === 'created' ? '已下单' : item.status}}</text>
+      </view>
+
+      <view class="order-summary-strip">
+        <view>
+          <text class="summary-label">菜品</text>
+          <text class="summary-value">{{item.itemCount}} 件</text>
+        </view>
+        <view>
+          <text class="summary-label">实付</text>
+          <text class="summary-value price">￥{{item.payable}}</text>
+        </view>
+      </view>
+
+      <view class="dish-list">
+        <view class="dish-row" wx:for="{{item.items}}" wx:for-item="dish" wx:key="productId">
+          <view class="dish-info">
+            <text class="dish-name">{{dish.name}}</text>
+            <text class="dish-count">x {{dish.count}}</text>
+          </view>
+          <text class="dish-price">￥{{dish.price * dish.count}}</text>
+        </view>
+      </view>
+
+      <view class="order-total">
+        <text>合计</text>
+        <text>￥{{item.payable}}</text>
+      </view>
+      <view class="order-actions" wx:if="{{!manageMode}}">
+        <button class="delete-order-btn" catchtap="deleteOrder" data-id="{{item._id}}">删除</button>
+      </view>
+    </view>
+    </view>
+  </block>
+</view>

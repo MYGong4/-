@@ -1,0 +1,67 @@
+<view class="page cart-page">
+  <view wx:if="{{items.length === 0}}" class="cart-empty">
+    <view class="empty-mark">🛒</view>
+    <text class="empty-title">购物车还是空的</text>
+    <text class="empty-copy">先去菜单里挑几道喜欢的，结算时会帮你整理好数量和费用。</text>
+    <button class="primary-button empty-button" bindtap="goMenu">去点餐</button>
+  </view>
+
+  <block wx:if="{{items.length > 0}}">
+    <view class="cart-header">
+      <view>
+        <text class="eyebrow">购物车</text>
+        <text class="cart-title">已选 {{summary.count}} 件菜品</text>
+      </view>
+      <button class="clear-button" bindtap="clear">清空</button>
+    </view>
+
+    <view class="cart-list">
+      <view class="cart-item" wx:for="{{items}}" wx:key="productId">
+        <view class="item-top">
+          <view class="item-index">{{index + 1}}</view>
+          <view class="item-info">
+            <text class="item-name">{{item.name}}</text>
+            <text class="item-meta">单价 ￥{{item.price}}</text>
+          </view>
+          <text class="item-price">￥{{item.price * item.count}}</text>
+        </view>
+        <view class="item-bottom">
+          <text class="item-count-label">数量</text>
+          <view class="counter">
+            <button class="counter-button" data-id="{{item.productId}}" bindtap="decrease">-</button>
+            <text class="counter-value">{{item.count}}</text>
+            <button class="counter-button" data-id="{{item.productId}}" bindtap="increase">+</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="summary-card">
+      <view class="summary-head">
+        <text>费用明细</text>
+        <text>{{summary.count}} 件</text>
+      </view>
+      <view class="summary-row">
+        <text>菜品小计</text>
+        <text>￥{{summary.amount}}</text>
+      </view>
+      <view class="summary-row">
+        <text>配送费</text>
+        <text>￥{{deliveryFee}}</text>
+      </view>
+      <view class="summary-row total">
+        <text>应付合计</text>
+        <text>￥{{payable}}</text>
+      </view>
+    </view>
+
+    <view class="checkout-bar">
+      <view>
+        <text class="checkout-label">合计</text>
+        <text class="checkout-price">￥{{payable}}</text>
+        <text class="checkout-hint">{{deliveryHint}}</text>
+      </view>
+      <button class="checkout-button" bindtap="goCheckout">去下单</button>
+    </view>
+  </block>
+</view>

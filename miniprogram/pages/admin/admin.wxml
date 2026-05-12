@@ -1,0 +1,142 @@
+<view class="page admin-page">
+  <view wx:if="{{!authorized}}" class="admin-empty">正在进行管理员验证...</view>
+
+  <block wx:else>
+  <view class="admin-header">
+    <view class="admin-title-group">
+      <text class="admin-eyebrow">菜单配图管理</text>
+      <text class="admin-title">菜品图片参考</text>
+    </view>
+    <text class="admin-sub">给每一道菜补上实拍图，顾客翻页时会立即看到。</text>
+  </view>
+
+  <view class="admin-toolbar">
+    <button class="seed-btn" bindtap="seedMenuData">初始化云菜单</button>
+    <button class="add-product-btn" bindtap="openProductForm">新增菜品</button>
+    <button class="clear-all-btn" bindtap="clearAll">清除全部配图</button>
+  </view>
+
+  <view class="category-manager">
+    <view class="category-manager-head">
+      <view>
+        <text class="section-eyebrow">菜品种类</text>
+        <text class="section-title">分类管理</text>
+      </view>
+      <text class="category-count">{{categories.length}} 类</text>
+    </view>
+    <view class="category-create-row">
+      <input
+        class="category-input"
+        value="{{categoryForm.name}}"
+        bindinput="updateCategoryName"
+        placeholder="例如 粥粉、套餐、夜宵"
+      />
+      <button class="category-submit" bindtap="submitCategory">新增</button>
+    </view>
+    <scroll-view class="category-admin-scroll" scroll-x enable-flex>
+      <view
+        class="category-admin-chip"
+        wx:for="{{categories}}"
+        wx:key="_id"
+      >
+        <text>{{item.name}}</text>
+        <button
+          class="category-delete"
+          data-id="{{item._id}}"
+          data-name="{{item.name}}"
+          bindtap="deleteCategory"
+        >
+          ×
+        </button>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="product-form-mask" wx:if="{{showProductForm}}" catchtap="closeProductForm">
+    <view class="product-form-panel" catchtap="noop">
+      <view class="form-head">
+        <text class="form-title">新增菜品</text>
+        <button class="form-close" bindtap="closeProductForm">×</button>
+      </view>
+      <view class="field">
+        <text class="field-label">分类</text>
+        <picker range="{{categories}}" range-key="name" value="{{categoryIndex}}" bindchange="changeProductCategory">
+          <view class="picker-value">{{categories[categoryIndex].name || '请选择分类'}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="field-label">菜名</text>
+        <input class="field-input" value="{{productForm.name}}" data-key="name" bindinput="updateProductField" placeholder="例如 黑椒牛肉饭" />
+      </view>
+      <view class="field">
+        <text class="field-label">描述</text>
+        <textarea class="field-textarea" value="{{productForm.description}}" data-key="description" bindinput="updateProductField" maxlength="80" placeholder="写一句顾客能看懂的介绍" />
+      </view>
+      <view class="form-grid">
+        <view class="field">
+          <text class="field-label">价格</text>
+          <input class="field-input" type="digit" value="{{productForm.price}}" data-key="price" bindinput="updateProductField" placeholder="32" />
+        </view>
+        <view class="field">
+          <text class="field-label">月售</text>
+          <input class="field-input" type="number" value="{{productForm.sales}}" data-key="sales" bindinput="updateProductField" placeholder="0" />
+        </view>
+      </view>
+      <view class="field">
+        <text class="field-label">标签</text>
+        <input class="field-input" value="{{productForm.tag}}" data-key="tag" bindinput="updateProductField" placeholder="热卖 / 新品 / 推荐，可留空" />
+      </view>
+      <view class="switch-row">
+        <text>上架售卖</text>
+        <switch checked="{{productForm.available}}" color="#FF7B89" bindchange="toggleAvailable" />
+      </view>
+      <button class="submit-product-btn" bindtap="submitProduct">保存菜品</button>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="admin-empty">正在读取云菜单...</view>
+  <view wx:elif="{{products.length === 0}}" class="admin-empty">暂无菜品，请先初始化云菜单</view>
+
+  <view wx:else class="product-list">
+    <view class="admin-card" wx:for="{{products}}" wx:key="_id">
+      <view class="admin-preview" bindtap="pickImage" data-id="{{item._id}}">
+        <image
+          wx:if="{{item.image}}"
+          class="admin-preview-img"
+          src="{{item.image}}"
+          mode="aspectFill"
+          lazy-load
+        />
+        <view wx:else class="admin-preview-empty">
+          <text class="admin-preview-plus">+</text>
+          <text class="admin-preview-tip">添加图片</text>
+        </view>
+      </view>
+      <view class="admin-card-body">
+        <view class="admin-dish-copy">
+          <text class="admin-dish-name">{{item.name}}</text>
+          <text class="admin-dish-desc">{{item.description}}</text>
+        </view>
+        <view class="admin-meta-row">
+          <text class="admin-dish-price">￥{{item.price}}</text>
+          <text class="admin-dish-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+        </view>
+        <view class="admin-actions">
+          <button class="pick-btn" data-id="{{item._id}}" bindtap="pickImage">
+            {{uploadingId === item._id ? '上传中' : (item.image ? '更换图片' : '选择图片')}}
+          </button>
+          <button
+            wx:if="{{item.image}}"
+            class="clear-item-btn"
+            data-id="{{item._id}}"
+            bindtap="clearImage"
+          >
+            清除
+          </button>
+          <button class="delete-product-btn" data-id="{{item._id}}" bindtap="deleteProduct">删除</button>
+        </view>
+      </view>
+    </view>
+  </view>
+  </block>
+</view>

@@ -1,0 +1,119 @@
+page {
+  min-height: 100%;
+  color: #5C3D2E;
+  background: #FFF5EC;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 28rpx;
+  box-sizing: border-box;
+}
+
+/* ===== 波点纹理背景 ===== */
+.dot-bg {
+  position: relative;
+}
+.dot-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.18;
+  background-image:
+    radial-gradient(circle, #FFB854 1.5rpx, transparent 1.5rpx),
+    radial-gradient(circle, #FF7B89 1rpx, transparent 1rpx);
+  background-size: 80rpx 80rpx, 120rpx 120rpx;
+  background-position: 0 0, 40rpx 60rpx;
+}
+
+/* ===== 按钮 ===== */
+.primary-button {
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, #FF7B89 0%, #FF9AAE 100%);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 800;
+  box-shadow: 0 16rpx 36rpx rgba(255, 123, 137, 0.28);
+  border: 0;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.primary-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 8rpx 20rpx rgba(255, 123, 137, 0.20);
+}
+
+.ghost-button {
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 36rpx;
+  color: #FF7B89;
+  border: 2rpx solid rgba(255, 123, 137, 0.28);
+  background: rgba(255, 251, 247, 0.7);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* ===== 工具类 ===== */
+.muted {
+  color: #A08C7C;
+}
+
+.price {
+  color: #FF7B89;
+  font-weight: 800;
+}
+
+/* ===== 空状态 ===== */
+.empty {
+  padding: 120rpx 48rpx;
+  text-align: center;
+  color: #A08C7C;
+  font-size: 30rpx;
+  line-height: 1.5;
+}
+
+/* ===== 标题 ===== */
+.section-title {
+  display: block;
+  margin: 36rpx 0 20rpx;
+  font-size: 34rpx;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #5C3D2E;
+  padding-left: 12rpx;
+}
+.section-title::before {
+  content: "🍽 ";
+  font-size: 28rpx;
+}
+
+/* ===== 动画 ===== */
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.08); }
+  70% { transform: scale(0.94); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-120rpx) scale(0.6); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

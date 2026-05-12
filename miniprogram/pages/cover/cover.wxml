@@ -1,0 +1,80 @@
+<view class="cover-page">
+  <!-- 背景装饰波点 -->
+  <view class="bg-dots"></view>
+
+  <!-- 漂浮装饰 -->
+  <view class="float-deco deco-1">🌸</view>
+  <view class="float-deco deco-2">⭐</view>
+  <view class="float-deco deco-3">🍰</view>
+  <view class="float-deco deco-4">🧁</view>
+  <view class="float-deco deco-5">💕</view>
+
+  <!-- 主书本容器 -->
+  <view class="book {{opening ? 'opening' : ''}}" bindtap="openBook">
+
+    <!-- 左页（封面左侧） -->
+    <view class="page-left">
+      <view class="spine-dots">
+        <view class="spine-dot"></view>
+        <view class="spine-dot"></view>
+        <view class="spine-dot"></view>
+        <view class="spine-dot"></view>
+      </view>
+      <view class="left-content">
+        <text class="book-emoji">📖</text>
+        <text class="book-label">SINCE 2026</text>
+      </view>
+    </view>
+
+    <!-- 右页（封面右侧，点击后翻开） -->
+    <view class="page-right">
+      <!-- 封面正面 -->
+      <view class="cover-front">
+        <view class="cover-deco-top">
+          <text class="deco-star">✦</text>
+          <text class="deco-star">✧</text>
+          <text class="deco-star">✦</text>
+        </view>
+        <view class="cover-border">
+          <view class="cover-content">
+            <text class="cover-emoji">🍽️</text>
+            <text class="store-name">鑫鑫今天</text>
+            <text class="store-name">吃什么呢</text>
+            <view class="cute-divider">
+              <text>·</text><text>·</text><text>·</text>
+            </view>
+            <text class="store-tag">🍳 私人厨房</text>
+            <text class="tap-text">👆 轻触翻开</text>
+          </view>
+        </view>
+        <view class="cover-deco-bottom">
+          <text class="deco-heart">♡</text>
+          <text class="deco-heart">♥</text>
+          <text class="deco-heart">♡</text>
+        </view>
+      </view>
+
+      <!-- 封面背面（翻开后 = 书的第一页） -->
+      <view class="cover-back">
+        <view class="back-content">
+          <text class="back-wave">〰〰〰</text>
+          <text class="back-title">📋 今日菜单</text>
+          <text class="back-sub">精选时令食材</text>
+          <text class="back-sub">匠心烹制</text>
+          <view class="back-emoji-row">
+            <text>🥩</text>
+            <text>🍜</text>
+            <text>🍗</text>
+            <text>🥤</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="bottom-tip" wx:if="{{!opening}}">
+    <text class="tip-text">✨ 轻触小本本，看看今天吃什么 ✨</text>
+  </view>
+</view>

@@ -1,0 +1,126 @@
+<view class="menu-page {{categoryDrawerOpen ? 'drawer-open' : ''}}">
+  <view class="catalog-rail" hover-class="catalog-rail-hover" bindtap="toggleCategoryDrawer">
+    <button class="catalog-toggle" catchtap="toggleCategoryDrawer" aria-label="打开菜品目录">
+      <image class="catalog-toggle-icon" src="/assets/icons/catalog.svg" mode="aspectFit" />
+    </button>
+  </view>
+
+  <view class="catalog-drawer {{categoryDrawerOpen ? 'show' : ''}}">
+    <view class="catalog-head">
+      <text class="catalog-title">目录</text>
+      <button class="catalog-close" bindtap="toggleCategoryDrawer">×</button>
+    </view>
+    <scroll-view class="catalog-scroll" scroll-y>
+      <view
+        wx:for="{{categories}}"
+        wx:key="_id"
+        class="catalog-item {{activeCategoryId === item._id ? 'active' : ''}}"
+        data-id="{{item._id}}"
+        bindtap="selectCategory"
+      >
+        <text class="catalog-item-name">{{item.name}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="menu-content">
+    <view class="book-head">
+      <view>
+        <text class="eyebrow">今日菜单</text>
+        <text class="book-title">翻到想吃的那一页</text>
+      </view>
+      <view class="page-mark">
+        <text>{{currentIndex + 1}}</text>
+        <text>/{{products.length || 1}}</text>
+      </view>
+    </view>
+
+    <scroll-view class="category-strip" scroll-x enable-flex>
+      <view
+        wx:for="{{categories}}"
+        wx:key="_id"
+        class="category-chip {{activeCategoryId === item._id ? 'active' : ''}}"
+        data-id="{{item._id}}"
+        bindtap="selectCategory"
+      >
+        {{item.name}}
+      </view>
+    </scroll-view>
+
+    <view wx:if="{{loading}}" class="menu-skeleton" aria-label="菜单加载中">
+      <view class="skeleton-hero skeleton-shimmer"></view>
+      <view class="skeleton-line skeleton-line-title skeleton-shimmer"></view>
+      <view class="skeleton-line skeleton-shimmer"></view>
+      <view class="skeleton-line skeleton-line-short skeleton-shimmer"></view>
+      <view class="skeleton-meta">
+        <view class="skeleton-pill skeleton-shimmer"></view>
+        <view class="skeleton-pill skeleton-shimmer"></view>
+      </view>
+    </view>
+    <view wx:elif="{{products.length === 0}}" class="empty-state">🫧 这一章还没有菜品哦</view>
+
+    <swiper
+      wx:else
+      class="dish-book"
+      current="{{currentIndex}}"
+      duration="420"
+      easing-function="easeOutCubic"
+      previous-margin="{{categoryDrawerOpen ? '16rpx' : '36rpx'}}"
+      next-margin="{{categoryDrawerOpen ? '16rpx' : '36rpx'}}"
+      bindchange="onDishChange"
+    >
+      <swiper-item wx:for="{{products}}" wx:key="_id">
+        <view class="dish-page">
+          <view class="paper-grain"></view>
+          <view class="dish-hero">
+            <image wx:if="{{item.image}}" class="dish-image" src="{{item.image}}" mode="aspectFill" lazy-load />
+            <view wx:else class="dish-image-fallback">
+              <text class="fallback-number">No. {{index + 1}}</text>
+              <text class="fallback-text">📸 等店主上传美美的图片</text>
+            </view>
+            <view class="dish-tag" wx:if="{{item.tag}}">{{item.tag}}</view>
+          </view>
+
+          <view class="dish-copy">
+            <text class="category-name">{{activeCategoryName}}</text>
+            <text class="dish-title">{{item.name}}</text>
+            <text class="dish-desc">{{item.description}}</text>
+          </view>
+
+          <view class="dish-meta">
+            <view class="meta-cell">
+              <text class="meta-label">月售</text>
+              <text class="meta-value">{{item.sales}}</text>
+            </view>
+            <view class="meta-cell">
+              <text class="meta-label">价格</text>
+              <text class="meta-value price">￥{{item.price}}</text>
+            </view>
+          </view>
+
+          <button
+            class="add-button"
+            disabled="{{!item.available}}"
+            data-product="{{item}}"
+            bindtap="addToCart"
+          >
+            {{item.available ? '加购' : '售罄'}}
+          </button>
+        </view>
+      </swiper-item>
+    </swiper>
+
+    <view class="turn-hint" wx:if="{{!loading && products.length > 1}}">
+      <text>{{categoryDrawerOpen ? '左侧目录可上下滑动' : '左右滑动翻页'}}</text>
+    </view>
+
+    <view class="cart-bar {{cartPulse ? 'pulse' : ''}}" wx:if="{{cartCount > 0}}" bindtap="goCart">
+      <view>
+        <text class="cart-count">{{cartCount}} 件</text>
+        <text class="cart-amount">￥{{cartAmount}}</text>
+        <text class="cart-hint">{{deliveryHint}}</text>
+      </view>
+      <text class="cart-link">去结算</text>
+    </view>
+  </view>
+</view>

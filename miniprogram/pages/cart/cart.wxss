@@ -1,0 +1,357 @@
+/* ===== 购物车（可爱风） ===== */
+
+.cart-page {
+  min-height: 100vh;
+  padding: 34rpx 28rpx 190rpx;
+  background:
+    radial-gradient(ellipse at 80% 10%, rgba(255, 123, 137, 0.08), transparent 240rpx),
+    radial-gradient(ellipse at 20% 90%, rgba(255, 184, 84, 0.08), transparent 220rpx),
+    linear-gradient(175deg, #FFF5EC 0%, #FFF0E5 40%, #FFF8F2 100%);
+  color: #5C3D2E;
+}
+
+/* 背景波点 */
+.cart-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.12;
+  background-image:
+    radial-gradient(circle, #FFB854 1.5rpx, transparent 1.5rpx),
+    radial-gradient(circle, #FF7B89 1rpx, transparent 1rpx);
+  background-size: 80rpx 80rpx, 120rpx 120rpx;
+  background-position: 0 0, 40rpx 60rpx;
+}
+
+/* ===== 空购物车 ===== */
+.cart-empty {
+  min-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.empty-mark {
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  margin-bottom: 30rpx;
+  border-radius: 90rpx;
+  background: rgba(255, 255, 255, 0.7);
+  border: 3rpx solid rgba(255, 180, 160, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  box-shadow: 0 12rpx 30rpx rgba(255, 150, 140, 0.12);
+}
+
+.empty-title {
+  color: #5C3D2E;
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.empty-copy {
+  width: 500rpx;
+  margin-top: 16rpx;
+  font-size: 27rpx;
+  line-height: 1.55;
+  color: #A08070;
+}
+
+.empty-button {
+  width: 360rpx;
+  margin-top: 36rpx;
+}
+
+/* ===== 购物车头部 ===== */
+.cart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 30rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  display: block;
+  color: #A08070;
+  font-size: 22rpx;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.cart-title {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 36rpx;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #5C3D2E;
+}
+
+.clear-button {
+  width: 118rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0;
+  margin: 0;
+  border-radius: 30rpx;
+  color: #FF7B89;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2rpx solid rgba(255, 180, 160, 0.18);
+  font-size: 23rpx;
+  font-weight: 800;
+  box-shadow: 0 4rpx 12rpx rgba(255, 150, 140, 0.08);
+}
+
+.clear-button::after,
+.checkout-button::after,
+.counter-button::after {
+  border: 0;
+}
+
+/* ===== 购物车列表 ===== */
+.cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.cart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  min-height: 140rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  background: #FFFBF7;
+  border: 2rpx solid rgba(255, 200, 180, 0.15);
+  box-shadow: 0 10rpx 28rpx rgba(255, 150, 140, 0.10);
+}
+
+.item-top,
+.item-bottom {
+  display: flex;
+  align-items: center;
+}
+
+.item-top {
+  gap: 16rpx;
+}
+
+.item-bottom {
+  justify-content: space-between;
+  padding-left: 66rpx;
+}
+
+.item-index {
+  width: 50rpx;
+  height: 50rpx;
+  flex: 0 0 50rpx;
+  border-radius: 25rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  background: linear-gradient(135deg, #FF7B89 0%, #FF9AAE 100%);
+  font-size: 22rpx;
+  font-weight: 900;
+  box-shadow: 0 4rpx 12rpx rgba(255, 123, 137, 0.2);
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.item-name {
+  font-size: 30rpx;
+  font-weight: 900;
+  line-height: 1.35;
+  color: #5C3D2E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-meta {
+  color: #A08070;
+  font-size: 22rpx;
+  line-height: 1.2;
+}
+
+.item-price {
+  min-width: 116rpx;
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.25;
+  color: #FF7B89;
+}
+
+.item-count-label {
+  color: #B89888;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+/* 计数器 */
+.counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 220rpx;
+  width: 220rpx;
+  height: 60rpx;
+  padding: 0 8rpx;
+  border-radius: 30rpx;
+  background: rgba(255, 240, 235, 0.7);
+  border: 2rpx solid rgba(255, 200, 180, 0.18);
+}
+
+.counter-button {
+  width: 56rpx;
+  height: 46rpx;
+  padding: 0;
+  margin: 0;
+  border-radius: 23rpx;
+  color: #FF7B89;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2rpx solid rgba(255, 180, 160, 0.15);
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 46rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.counter-button:active {
+  background: rgba(255, 123, 137, 0.1);
+}
+
+.counter-value {
+  min-width: 44rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.25;
+  color: #5C3D2E;
+}
+
+/* ===== 汇总卡片 ===== */
+.summary-card {
+  margin-top: 28rpx;
+  padding: 30rpx 28rpx;
+  border-radius: 20rpx;
+  background: #FFFBF7;
+  color: #5C3D2E;
+  box-shadow: 0 10rpx 28rpx rgba(255, 150, 140, 0.10);
+  border: 2rpx solid rgba(255, 200, 180, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.summary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22rpx;
+  color: #5C3D2E;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+  color: #8B6F5E;
+  font-size: 28rpx;
+  line-height: 1.4;
+}
+
+.summary-row.total {
+  margin-bottom: 0;
+  padding-top: 18rpx;
+  border-top: 2rpx solid rgba(255, 180, 160, 0.2);
+  color: #5C3D2E;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+/* ===== 底部结算条 ===== */
+.checkout-bar {
+  position: fixed;
+  left: 28rpx;
+  right: 28rpx;
+  bottom: 30rpx;
+  z-index: 20;
+  min-height: 106rpx;
+  padding: 0 18rpx 0 30rpx;
+  border-radius: 53rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  color: #5C3D2E;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2rpx solid rgba(255, 200, 180, 0.18);
+  box-shadow: 0 14rpx 38rpx rgba(255, 150, 140, 0.16);
+  backdrop-filter: blur(10rpx);
+}
+
+.checkout-label {
+  display: block;
+  color: #A08070;
+  font-size: 22rpx;
+}
+
+.checkout-price {
+  display: block;
+  margin-top: 2rpx;
+  color: #FF7B89;
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.checkout-hint {
+  display: block;
+  margin-top: 4rpx;
+  color: #B89888;
+  font-size: 21rpx;
+  line-height: 1.2;
+}
+
+.checkout-button {
+  width: 250rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 38rpx;
+  background: linear-gradient(135deg, #FF7B89 0%, #FF9AAE 100%);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 900;
+  box-shadow: 0 10rpx 24rpx rgba(255, 123, 137, 0.25);
+}

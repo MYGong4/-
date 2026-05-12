@@ -1,0 +1,45 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/cover/cover",
+    "pages/menu/menu",
+    "pages/cart/cart",
+    "pages/checkout/checkout",
+    "pages/orders/orders",
+    "pages/admin/admin"
+  ],
+  "window": {
+    "navigationBarTitleText": "鑫鑫今天吃什么呢",
+    "navigationBarBackgroundColor": "#FFF5EC",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF5EC"
+  },
+  "tabBar": {
+    "color": "#C4AFA0",
+    "selectedColor": "#FF7B89",
+    "backgroundColor": "#FFFBF7",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "点餐",
+        "iconPath": "assets/tabbar/home.png",
+        "selectedIconPath": "assets/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/cart/cart",
+        "text": "购物车",
+        "iconPath": "assets/tabbar/cart.png",
+        "selectedIconPath": "assets/tabbar/cart-active.png"
+      },
+      {
+        "pagePath": "pages/orders/orders",
+        "text": "订单",
+        "iconPath": "assets/tabbar/orders.png",
+        "selectedIconPath": "assets/tabbar/orders-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

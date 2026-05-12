@@ -1,0 +1,64 @@
+<view class="page checkout-page">
+  <view class="summary-card">
+    <text class="summary-title">订单确认</text>
+    <view class="summary-row">
+      <text>{{summary.count}} 件菜品</text>
+      <text>￥{{summary.amount}}</text>
+    </view>
+    <view class="summary-row">
+      <text>配送费</text>
+      <text>￥{{deliveryFee}}</text>
+    </view>
+    <view class="summary-row total">
+      <text>应付</text>
+      <text>￥{{payable}}</text>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <text class="form-title">取餐/配送信息</text>
+    <input
+      class="field"
+      placeholder="联系人"
+      value="{{form.contactName}}"
+      maxlength="20"
+      data-key="contactName"
+      bindinput="updateField"
+    />
+    <input
+      class="field"
+      placeholder="联系电话"
+      type="number"
+      value="{{form.phone}}"
+      maxlength="11"
+      data-key="phone"
+      bindinput="updateField"
+    />
+    <input
+      class="field"
+      placeholder="地址或桌号，可选"
+      value="{{form.address}}"
+      maxlength="100"
+      data-key="address"
+      bindinput="updateField"
+    />
+    <textarea
+      class="textarea"
+      placeholder="备注口味、餐具等，可选"
+      value="{{form.note}}"
+      maxlength="100"
+      data-key="note"
+      bindinput="updateField"
+    />
+  </view>
+
+  <view class="order-items">
+    <text class="form-title">菜品明细</text>
+    <view class="item-row" wx:for="{{items}}" wx:key="productId">
+      <text>{{item.name}} x {{item.count}}</text>
+      <text>￥{{item.price * item.count}}</text>
+    </view>
+  </view>
+
+  <button class="primary-button submit-button" loading="{{submitting}}" bindtap="submitOrder">提交订单</button>
+</view>

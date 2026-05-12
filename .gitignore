@@ -1,0 +1,16 @@
+# Claude 内部文件
+.agents/
+.claude/
+AGENTS.md
+
+# 微信开发者工具私有配置
+project.private.config.json
+
+# 非项目文件
+baibaiAIGC/
+findings.md
+preview.html
+preview.png
+progress.md
+task_plan.md
+测试与功能优化文档.md
